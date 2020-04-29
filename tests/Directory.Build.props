@@ -1,0 +1,12 @@
+<Project>
+
+  <!-- Defines the common package references for all the unit tests project -->
+  <!--<ItemGroup>
+    <PackageReference Include="Moq" version="4.2.1409.1722" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" PrivateAssets="All" Condition="'$(DisableStyleCopAnalyzers)' == '' or '$(DisableStyleCopAnalyzers)' == 'False'" />
+    <PackageReference Include="SuezSmartSolutions.DevelopmentTools.VisualStudio.UnitTesting" Version="$(SuezSmartSolutionsDevelopmentToolsVersion)" />
+  </ItemGroup>-->
+
+</Project>

@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/Pool.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "RaspberryPublish",
+            "command": "cmd",
+            "type": "shell",
+            "args": [
+                "/c",
+                ".\\.vscode\\build.cmd"
+            ]
+        }
+    ]
+}

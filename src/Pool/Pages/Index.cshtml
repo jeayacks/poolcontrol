@@ -1,0 +1,122 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Accueil";
+}
+
+
+
+<div class="card-deck">
+    <div class="card border-primary mb-2">
+        <div class="card-header text-white bg-primary">Piscine</div>
+        <div class="card-body text-primary">
+            <table class="table table-sm">
+                <tbody>
+                    <tr>
+                        <td>Mode:</td>
+                        <td>
+                            @if (Model.GeneralState.SummerMode){
+                            <i>Eté </i>
+                            <i class="fas fa-sun text-warning"></i>
+                            } else{
+                            <i>Hiver </i>
+                            <i class="far fa-snowflake"></i>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Filtration :</td>
+                        <td>
+                            <i class="@(Model.GeneralState.Pump ? "fas fa-power-off text-success":"")"></i>
+                            <i>@(Model.GeneralState.Pump ? " Marche" : " Arret")</i>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">@Model.GeneralState.Status</td>
+                    </tr>
+                    <tr>
+                        <td>Bassin :</td>
+                        <td>@Model.GeneralState.PoolTemperature °C</td>
+                    </tr>
+                    <tr>
+                        <td>Temps de filtration :</td>
+                        <td>@Model.GeneralState.PumpingDurationPerDayInHours h</td>
+                    </tr>
+                    <tr>
+                        <td>Forçage marche / arrêt :</td>
+                        <td>
+                            @if (Model.GeneralState.PumpForceOff)
+                            {
+                                <i class="fas fa-power-off text-danger"></i>
+                                <i> Arrêt</i>
+                            }
+                            @if (Model.GeneralState.PumpForceOn)
+                            {
+                                <i class="fas fa-power-off text-danger"></i>
+                                <i> Marche</i>
+                            }
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <div class="card border-primary mb-2">
+        <div class="card-header text-white bg-primary">Programmation future</div>
+        <div class="card-body text-primary">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">Début</th>
+                        <th scope="col">Fin</th>
+                        <th scope="col">CL</th>
+                        <th scope="col">PH</th>
+                    </tr>
+                </thead>
+                @foreach (var item in this.Model.State.PumpCycles){
+                <tbody>
+                    <tr>
+                        <td>@item.StartTime.ToString("ddd HH:mm")</td>
+                        <td>@item.EndTime.ToString("ddd HH:mm")</td>
+                        <td><i class="@(item.ChlorineInhibition ? "far fa-times-circle text-danger":"")"></i></td>
+                        <td><i class="@(item.PhRegulationInhibition ? "far fa-times-circle text-danger":"")"></i></td>
+                    </tr>
+                </tbody>
+                    }
+            </table>
+        </div>
+    </div>
+
+
+    <div class="card border-primary mb-2">
+        <div class="card-header text-white bg-primary">Jardin</div>
+        <div class="card-body text-primary">
+            <table class="table table-sm">
+                <tbody>
+                    <tr>
+                        <td>Arrosage:</td>
+                        <td>
+                            <i class="@(Model.GeneralState.Watering ? "fas fa-power-off text-success":"")"></i>
+                            <i>@(Model.GeneralState.Watering ? " Marche" : " Arret")</i>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Eclairage piscine:</td>
+                        <td>
+                            <i class="@(Model.GeneralState.SwimmingPoolLigth ? "fas fa-lightbulb text-success":"far fa-lightbulb text-muted")"></i>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Eclairage terrasse:</td>
+                        <td>
+                            <i class="@(Model.GeneralState.DeckLight ? "fas fa-lightbulb text-success":"far fa-lightbulb text-muted")"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

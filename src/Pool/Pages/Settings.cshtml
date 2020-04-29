@@ -1,0 +1,30 @@
+﻿@page
+@model SettingsModel
+@{
+    ViewData["Title"] = "Réglages";
+}
+
+<form method="post">
+    <!-- Input and Submit elements -->
+
+    <div class="card border-primary mb-2">
+        <div class="card-header text-white bg-primary">Configuration générale</div>
+        <div class="card-body">
+            <div class="m-1">
+                Réglages des cycles de pompage.
+            </div>
+            <div class="m-2">
+                <button type="submit" onclick="return confirm('Voulez-vous changer de mode ?')" class="btn btn-danger" value="changeMode">@Model.SwitchButtonModeText</button>
+            </div>
+            <div class="m-2">
+                Accéder aux réglages
+            </div>
+            <div class="m-2">
+                <a href="SettingsEditor" class="btn btn-primary">
+                    Modifier les réglages
+                </a>
+            </div>
+        </div>
+    </div>
+
+</form>

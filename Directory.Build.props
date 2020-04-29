@@ -1,0 +1,12 @@
+<Project>
+  <!-- Common properties between all projects -->
+  <PropertyGroup>
+    <Authors>JJP</Authors>
+    <Company>JJP Home</Company>
+    <Copyright>Copyright © JJP Homeworks 2020</Copyright>
+    <Product>Pool Automation system</Product>
+
+  </PropertyGroup>
+
+
+</Project>

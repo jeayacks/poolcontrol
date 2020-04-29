@@ -1,0 +1,32 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (remote console)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "RaspberryPublish",
+            "program": "~/dotnet/dotnet",
+            "args": [
+                "./pool.dll",
+                "run"
+            ],
+            "cwd": "~/pool",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "pipeTransport": {
+                "pipeCwd": "${workspaceRoot}",
+                "pipeProgram": "D:\\App\\plink.exe",
+                "pipeArgs": [
+                    "-pw",
+                    "raspberry",
+                    "pi@192.168.0.102"
+                ],
+                "debuggerPath": "~/vsdbg/vsdbg"
+            }
+        }
+    ]
+}

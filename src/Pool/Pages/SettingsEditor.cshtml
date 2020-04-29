@@ -1,0 +1,13 @@
+﻿@page
+@model SettingsEditorModel
+@{
+    ViewData["Title"] = "Réglages";
+}
+
+    <form method="post">
+        <div class="form-group">
+            <label for="exampleFormControlTextarea1">Reglages</label>
+            <textarea  asp-for="JsonSettings"  class="form-control" id="exampleFormControlTextarea1" rows="25"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+    </form>

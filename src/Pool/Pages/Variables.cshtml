@@ -1,0 +1,60 @@
+﻿@page
+@model VariablesModel
+@{
+    ViewData["Title"] = "Variables";
+}
+
+
+
+    <div class="card-deck">
+
+        <div class="card border-primary mb-2">
+            <div class="card-header text-white bg-primary">Sortie relais</div>
+            <div class="card-body text-primary">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th scope="col">Pin</th>
+                            <th scope="col">Sortie</th>
+                            <th scope="col">Valeur</th>
+                        </tr>
+                    </thead>
+                    @foreach (var item in this.Model.Outputs)
+                    {
+                        <tbody>
+                            <tr>
+                                <td>@item.PinName</td>
+                                <td>@item.Description</td>
+                                <td><i class="@(item.State ? "fas fa-toggle-on text-success":"fas fa-toggle-off text-muted")"></i></td>
+                            </tr>
+                        </tbody>
+                    }
+                </table>
+            </div>
+        </div>
+
+        <div class="card border-primary mb-2">
+            <div class="card-header text-white bg-primary">Variables</div>
+            <div class="card-body text-primary">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th scope="col">Variable</th>
+                            <th scope="col">Valeur</th>
+                            <th scope="col">Date</th>
+                        </tr>
+                    </thead>
+                    @foreach (var item in this.Model.Variables)
+                    {
+                        <tbody>
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.Value</td>
+                                <td>@item.Date</td>
+                            </tr>
+                        </tbody>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
