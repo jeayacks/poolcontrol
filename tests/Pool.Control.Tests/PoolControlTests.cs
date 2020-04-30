@@ -57,9 +57,9 @@ namespace Pool.Control.Tests
 
             settings.WorkingMode = PoolWorkingMode.Winter;
             settings.CoverCylcleDurationInSeconds = 30;
-            settings.WinterPumpingCycles.Add(new PumpCycleSetting());
+            settings.WinterPumpingCycles.Add(new PumpCycleGroupSetting());
             settings.TemperatureRunTime.Add(new TemperatureRunTime());
-            settings.SummerPumpingCycles.Add(new PumpCycleSetting());
+            settings.SummerPumpingCycles.Add(new PumpCycleGroupSetting());
 
             context.PoolControl.SavePoolSettings(settings);
 
@@ -68,7 +68,7 @@ namespace Pool.Control.Tests
             Assert.AreEqual(PoolWorkingMode.Winter, settings.WorkingMode);
             Assert.AreEqual(30, settings.CoverCylcleDurationInSeconds);
             Assert.AreEqual(1, settings.WinterPumpingCycles.Count);
-            Assert.AreEqual(3, settings.SummerPumpingCycles.Count);
+            Assert.AreEqual(2, settings.SummerPumpingCycles.Count);
             Assert.AreEqual(5, settings.TemperatureRunTime.Count);
         }
 
@@ -107,14 +107,15 @@ namespace Pool.Control.Tests
             {
                 var settings = new PoolSettings();
                 settings.SummerPumpingCycles.Clear();
+                settings.SummerPumpingCycles.Add(new PumpCycleGroupSetting());
 
-                settings.SummerPumpingCycles.Add(new PumpCycleSetting()
+                settings.SummerPumpingCycles[0].PumpingCycles.Add(new PumpCycleSetting()
                 {
                     DecisionTime = TimeSpan.FromHours(8),
                     PumpCycleType = PumpCycleType.StartAt,
                 });
 
-                settings.SummerPumpingCycles.Add(new PumpCycleSetting()
+                settings.SummerPumpingCycles[0].PumpingCycles.Add(new PumpCycleSetting()
                 {
                     DecisionTime = TimeSpan.FromHours(16),
                     PumpCycleType = PumpCycleType.StartAt,

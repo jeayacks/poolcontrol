@@ -21,8 +21,8 @@ namespace Pool.Control.Store
         {
             this.WorkingMode = PoolWorkingMode.Summer;
             this.CoverCylcleDurationInSeconds = 90;
-            this.SummerPumpingCycles = new List<PumpCycleSetting>();
-            this.WinterPumpingCycles = new List<PumpCycleSetting>();
+            this.SummerPumpingCycles = new List<PumpCycleGroupSetting>();
+            this.WinterPumpingCycles = new List<PumpCycleGroupSetting>();
             this.TemperatureRunTime = new List<TemperatureRunTime>();
         }
 
@@ -39,12 +39,12 @@ namespace Pool.Control.Store
         /// <summary>
         /// Gets or sets the summer cycles
         /// </summary>
-        public List<PumpCycleSetting> SummerPumpingCycles { get; set; }
+        public List<PumpCycleGroupSetting> SummerPumpingCycles { get; set; }
 
         /// <summary>
         /// Gets or sets the winter cycles
         /// </summary>
-        public List<PumpCycleSetting> WinterPumpingCycles { get; set; }
+        public List<PumpCycleGroupSetting> WinterPumpingCycles { get; set; }
 
         /// <summary>
         /// Gets or sets the puming time values
@@ -77,46 +77,58 @@ namespace Pool.Control.Store
             return result;
         }
 
-        public IEnumerable<PumpCycle> GetNextPumpCycles(DateTime currentTime, TimeSpan pumpingDurationPerDay, int numberOfDays)
+        public IEnumerable<PumpCycle> GetNextPumpCycles(DateTime currentTime, double temperature, TimeSpan pumpingDurationPerDay, int numberOfDays)
         {
             return this.WorkingMode == PoolWorkingMode.Summer
-                ? GetNextPumpCycles(this.SummerPumpingCycles, currentTime, pumpingDurationPerDay, numberOfDays)
-                : GetNextPumpCycles(this.WinterPumpingCycles, currentTime, pumpingDurationPerDay, numberOfDays);
+                ? GetNextPumpCycles(this.SummerPumpingCycles, currentTime, temperature, pumpingDurationPerDay, numberOfDays)
+                : GetNextPumpCycles(this.WinterPumpingCycles, currentTime, temperature, pumpingDurationPerDay, numberOfDays);
         }
 
         private static IEnumerable<PumpCycle> GetNextPumpCycles(
-            List<PumpCycleSetting> settings,
+            List<PumpCycleGroupSetting> settings,
             DateTime currentTime,
+            double temperature,
             TimeSpan durationPerDay,
             int numberOfDays)
         {
             if (settings.Count != 0)
             {
-
-                var durationInMinutes = Math.Round(durationPerDay.TotalMinutes / settings.Count);
-                var duration = TimeSpan.FromMinutes(durationInMinutes);
-
-                for (int i = 0; i < numberOfDays; i++)
+                // Find the group
+                var groups = settings.OrderBy(g => g.MinimumTemperature).ToList();
+                PumpCycleGroupSetting group = groups.LastOrDefault(g => g.MinimumTemperature <= temperature);
+                if (group == null)
                 {
-                    var time = currentTime.Date.AddDays(i);
+                    group = groups.First();
+                }
 
-                    foreach (var cycle in settings)
+                if (group != null)
+                {
+
+                    var durationInMinutes = Math.Round(durationPerDay.TotalMinutes / group.PumpingCycles.Count);
+                    var duration = TimeSpan.FromMinutes(durationInMinutes);
+
+                    for (int i = 0; i < numberOfDays; i++)
                     {
-                        DateTime startTime = cycle.PumpCycleType == PumpCycleType.StartAt
-                            ? time.Add(cycle.DecisionTime)
-                            : time.Add(cycle.DecisionTime - duration);
+                        var time = currentTime.Date.AddDays(i);
 
-                        DateTime endTime = cycle.PumpCycleType == PumpCycleType.StartAt
-                            ? time.Add(cycle.DecisionTime + duration)
-                            : time.Add(cycle.DecisionTime);
-
-                        if (endTime > currentTime)
+                        foreach (var cycle in group.PumpingCycles)
                         {
-                            yield return new PumpCycle(
-                                startTime,
-                                endTime,
-                                cycle.ChlorineInhibition,
-                                cycle.PhRegulationInhibition);
+                            DateTime startTime = cycle.PumpCycleType == PumpCycleType.StartAt
+                                ? time.Add(cycle.DecisionTime)
+                                : time.Add(cycle.DecisionTime - duration);
+
+                            DateTime endTime = cycle.PumpCycleType == PumpCycleType.StartAt
+                                ? time.Add(cycle.DecisionTime + duration)
+                                : time.Add(cycle.DecisionTime);
+
+                            if (endTime > currentTime)
+                            {
+                                yield return new PumpCycle(
+                                    startTime,
+                                    endTime,
+                                    cycle.ChlorineInhibition,
+                                    cycle.PhRegulationInhibition);
+                            }
                         }
                     }
                 }

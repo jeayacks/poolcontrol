@@ -250,10 +250,11 @@ namespace Pool.Control
 
         private void UpdateNextPumpCycles(bool includeCurrent)
         {
+            var temperature = this.systemState.PoolTemperatureDecision.Value;
             var durationPerDay = TimeSpan.FromHours(this.systemState.PumpingDurationPerDayInHours.Value);
 
             var results = this.poolSettings
-                .GetNextPumpCycles(SystemTime.Now, durationPerDay, 3)
+                .GetNextPumpCycles(SystemTime.Now, temperature, durationPerDay, 3)
                 .ToList();
 
             if (includeCurrent)

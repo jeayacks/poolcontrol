@@ -16,10 +16,14 @@ namespace Pool.Control.Tests
 
             poolSettings.WorkingMode = PoolWorkingMode.Winter;
             poolSettings.CoverCylcleDurationInSeconds = 100;
-            poolSettings.SummerPumpingCycles.Add(new PumpCycleSetting() { DecisionTime = TimeSpan.FromHours(1), PumpCycleType = PumpCycleType.StartAt });
-            poolSettings.SummerPumpingCycles.Add(new PumpCycleSetting() { DecisionTime = TimeSpan.FromHours(12), PumpCycleType = PumpCycleType.StopAt });
 
-            poolSettings.WinterPumpingCycles.Add(new PumpCycleSetting() { DecisionTime = TimeSpan.FromHours(15), PumpCycleType = PumpCycleType.StopAt });
+            poolSettings.SummerPumpingCycles.Add(new PumpCycleGroupSetting() { MinimumTemperature = 0 });
+            poolSettings.SummerPumpingCycles[0].PumpingCycles.Add(new PumpCycleSetting() { DecisionTime = TimeSpan.FromHours(1), PumpCycleType = PumpCycleType.StartAt });
+            poolSettings.SummerPumpingCycles[0].PumpingCycles.Add(new PumpCycleSetting() { DecisionTime = TimeSpan.FromHours(12), PumpCycleType = PumpCycleType.StopAt });
+
+
+            poolSettings.WinterPumpingCycles.Add(new PumpCycleGroupSetting() { MinimumTemperature = 0 });
+            poolSettings.WinterPumpingCycles[0].PumpingCycles.Add(new PumpCycleSetting() { DecisionTime = TimeSpan.FromHours(15), PumpCycleType = PumpCycleType.StopAt });
 
             poolSettings.TemperatureRunTime.Add(new TemperatureRunTime() { Temperature = 15, RunTimeHours = 1 });
             poolSettings.TemperatureRunTime.Add(new TemperatureRunTime() { Temperature = 20, RunTimeHours = 4 });
@@ -29,10 +33,11 @@ namespace Pool.Control.Tests
             var results = storeService.ReadPoolSettings("poolsettings.json");
             Assert.AreEqual(PoolWorkingMode.Winter, results.WorkingMode);
             Assert.AreEqual(100, results.CoverCylcleDurationInSeconds);
-            Assert.AreEqual(2, results.SummerPumpingCycles.Count);
-            Assert.AreEqual(PumpCycleType.StartAt, results.SummerPumpingCycles[0].PumpCycleType);
-            Assert.AreEqual(TimeSpan.FromHours(12), results.SummerPumpingCycles[1].DecisionTime);
-            Assert.AreEqual(PumpCycleType.StopAt, results.SummerPumpingCycles[1].PumpCycleType);
+            Assert.AreEqual(1, results.SummerPumpingCycles.Count);
+            Assert.AreEqual(2, results.SummerPumpingCycles[0].PumpingCycles.Count);
+            Assert.AreEqual(PumpCycleType.StartAt, results.SummerPumpingCycles[0].PumpingCycles[0].PumpCycleType);
+            Assert.AreEqual(TimeSpan.FromHours(12), results.SummerPumpingCycles[0].PumpingCycles[1].DecisionTime);
+            Assert.AreEqual(PumpCycleType.StopAt, results.SummerPumpingCycles[0].PumpingCycles[1].PumpCycleType);
         }
 
         [TestMethod]
@@ -41,7 +46,7 @@ namespace Pool.Control.Tests
             var results = new StoreService().ReadPoolSettings("nofile");
             Assert.AreEqual(PoolWorkingMode.Summer, results.WorkingMode);
             Assert.AreEqual(90, results.CoverCylcleDurationInSeconds);
-            Assert.AreEqual(3, results.SummerPumpingCycles.Count);
+            Assert.AreEqual(4, results.SummerPumpingCycles.Count);
             Assert.AreEqual(1, results.WinterPumpingCycles.Count);
         }
 

@@ -205,7 +205,8 @@ namespace Pool.Control.Tests
                 context.WaterTemperature = 12;
                 context.PoolSettings.WorkingMode = PoolWorkingMode.Winter;
                 context.PoolSettings.WinterPumpingCycles.Clear();
-                context.PoolSettings.WinterPumpingCycles.Add(new PumpCycleSetting()
+                context.PoolSettings.WinterPumpingCycles.Add(new PumpCycleGroupSetting());
+                context.PoolSettings.WinterPumpingCycles[0].PumpingCycles.Add(new PumpCycleSetting()
                 {
                     DecisionTime = TimeSpan.FromHours(5),
                     PumpCycleType = PumpCycleType.StartAt,
@@ -351,7 +352,8 @@ namespace Pool.Control.Tests
                 var settings = new PoolSettings();
                 settings.SummerPumpingCycles.Clear();
 
-                settings.SummerPumpingCycles.Add(new PumpCycleSetting()
+                settings.SummerPumpingCycles.Add(new PumpCycleGroupSetting());
+                settings.SummerPumpingCycles[0].PumpingCycles.Add(new PumpCycleSetting()
                 {
                     DecisionTime = TimeSpan.FromHours(8),
                     PumpCycleType = PumpCycleType.StartAt,
@@ -359,7 +361,7 @@ namespace Pool.Control.Tests
                     PhRegulationInhibition = false,
                 });
 
-                settings.SummerPumpingCycles.Add(new PumpCycleSetting()
+                settings.SummerPumpingCycles[0].PumpingCycles.Add(new PumpCycleSetting()
                 {
                     DecisionTime = TimeSpan.FromHours(16),
                     PumpCycleType = PumpCycleType.StartAt,
