@@ -15,12 +15,15 @@
                     <tr>
                         <td>Mode:</td>
                         <td>
-                            @if (Model.GeneralState.SummerMode){
-                            <i>Eté </i>
-                            <i class="fas fa-sun text-warning"></i>
-                            } else{
-                            <i>Hiver </i>
-                            <i class="far fa-snowflake"></i>
+                            @if (Model.GeneralState.SummerMode)
+                            {
+                                <i>Eté </i>
+                                <i class="fas fa-sun text-warning"></i>
+                            }
+                            else
+                            {
+                                <i>Hiver </i>
+                                <i class="far fa-snowflake"></i>
                             }
                         </td>
                     </tr>
@@ -75,16 +78,17 @@
                         <th scope="col">PH</th>
                     </tr>
                 </thead>
-                @foreach (var item in this.Model.State.PumpCycles){
-                <tbody>
-                    <tr>
-                        <td>@item.StartTime.ToString("ddd HH:mm")</td>
-                        <td>@item.EndTime.ToString("ddd HH:mm")</td>
-                        <td><i class="@(item.ChlorineInhibition ? "far fa-times-circle text-danger":"")"></i></td>
-                        <td><i class="@(item.PhRegulationInhibition ? "far fa-times-circle text-danger":"")"></i></td>
-                    </tr>
-                </tbody>
-                    }
+                @foreach (var item in this.Model.State.PumpCycles)
+                {
+                    <tbody>
+                        <tr>
+                            <td>@item.StartTime.ToString("ddd HH:mm")</td>
+                            <td>@item.EndTime.ToString("ddd HH:mm")</td>
+                            <td><i class="@(item.ChlorineInhibition ? "far fa-times-circle text-danger":"")"></i></td>
+                            <td><i class="@(item.PhRegulationInhibition ? "far fa-times-circle text-danger":"")"></i></td>
+                        </tr>
+                    </tbody>
+                }
             </table>
         </div>
     </div>
@@ -118,5 +122,31 @@
             </table>
         </div>
     </div>
+
+</div>
+
+
+
+<div>
+    @Html.Raw(Model.ChartRenderer.RenderHtml())
+</div>
+
+
+<div class="card-deck">
+
+    @foreach (var group in Model.PumpingCycles)
+    {
+
+        <div class="card border-primary mb-2">
+            <div class="card-header text-white bg-primary">&gt; @group.MinimumTemperature °C</div>
+            <div class="card-body">
+                @foreach (var item in group.PumpingCycles)
+                {
+                    <div>@(item.IsStartType ? "Démarre à" : "S'arrête à") @item.DecisionTime</div>
+                }
+            </div>
+        </div>
+
+    }
 
 </div>

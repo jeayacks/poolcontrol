@@ -6,6 +6,7 @@
 
 namespace Pool.Control.Store
 {
+    using Newtonsoft.Json;
     using System;
 
     /// <summary>
@@ -32,5 +33,11 @@ namespace Pool.Control.Store
         /// True to stop PH
         /// </summary>
         public bool PhRegulationInhibition { get; set; }
+
+        [JsonIgnore]
+        public bool IsStartType
+        {
+            get { return this.PumpCycleType == PumpCycleType.StartAt; }
+        }
     }
 }
