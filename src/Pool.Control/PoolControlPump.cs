@@ -28,7 +28,7 @@ namespace Pool.Control
         /// <summary>
         /// Interval to read temperature.
         /// </summary>
-        public const int PumpRunTimeToAcquirePoolTemperature = 300;
+        public const int PumpRunTimeToAcquirePoolTemperature = 900;
 
         /// <summary>
         /// Delay used to reset forcing states
