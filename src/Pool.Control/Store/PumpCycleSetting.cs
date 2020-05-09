@@ -14,6 +14,11 @@ namespace Pool.Control.Store
     /// </summary>
     public class PumpCycleSetting
     {
+        public PumpCycleSetting()
+        {
+            this.Ratio = 1;
+        }
+
         /// <summary>
         /// Gets or sets the time of start or end cycle
         /// </summary>
@@ -33,6 +38,11 @@ namespace Pool.Control.Store
         /// True to stop PH
         /// </summary>
         public bool PhRegulationInhibition { get; set; }
+
+        /// <summary>
+        /// True to stop PH
+        /// </summary>
+        public double Ratio { get; set; }
 
         [JsonIgnore]
         public bool IsStartType

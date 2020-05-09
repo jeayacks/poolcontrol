@@ -191,5 +191,49 @@ namespace Pool.Control.Tests
             Assert.AreEqual(4, settings.GetNextPumpCycles(time, 25, TimeSpan.FromHours(3), 1).Count());
             Assert.AreEqual(4, settings.GetNextPumpCycles(time, 30, TimeSpan.FromHours(3), 1).Count());
         }
+        [TestMethod]
+        public void CyclesWithRatios()
+        {
+            var settings = new PoolSettings();
+            settings.SummerPumpingCycles.Clear();
+            settings.SummerPumpingCycles.Add(new PumpCycleGroupSetting());
+
+            settings.SummerPumpingCycles[0].PumpingCycles.Add(new PumpCycleSetting()
+            {
+                DecisionTime = TimeSpan.FromHours(1),
+                PumpCycleType = PumpCycleType.StartAt,
+                Ratio = 0,
+            });
+
+            settings.SummerPumpingCycles[0].PumpingCycles.Add(new PumpCycleSetting()
+            {
+                DecisionTime = TimeSpan.FromHours(11),
+                PumpCycleType = PumpCycleType.StopAt,
+                Ratio = 2,
+            });
+
+            settings.SummerPumpingCycles[0].PumpingCycles.Add(new PumpCycleSetting()
+            {
+                DecisionTime = TimeSpan.FromHours(17),
+                PumpCycleType = PumpCycleType.StartAt,
+                Ratio = 100,
+            });
+
+            // ======== SUMMER MODE ============
+            settings.WorkingMode = PoolWorkingMode.Summer;
+            var time = DateTime.Now.Date;
+
+            var result = settings.GetNextPumpCycles(time.AddHours(1), 25d, TimeSpan.FromHours(4), 3).ToList();
+            Assert.AreEqual(9, result.Count);
+
+            Assert.AreEqual(time.AddHours(1), result[0].StartTime);
+            Assert.AreEqual(time.AddHours(2), result[0].EndTime);
+
+            Assert.AreEqual(time.AddHours(9), result[1].StartTime);
+            Assert.AreEqual(time.AddHours(11), result[1].EndTime);
+
+            Assert.AreEqual(time.AddHours(17), result[2].StartTime);
+            Assert.AreEqual(time.AddHours(18), result[2].EndTime);
+        }
     }
 }

@@ -103,9 +103,16 @@ namespace Pool.Control.Store
 
                 if (group != null)
                 {
+                    // Correct ratio if required
+                    foreach (var cycle in group.PumpingCycles)
+                    {
+                        if (cycle.Ratio < 0.5 || cycle.Ratio > 4)
+                        {
+                            cycle.Ratio = 1;
+                        }
+                    }
 
-                    var durationInMinutes = Math.Round(durationPerDay.TotalMinutes / group.PumpingCycles.Count);
-                    var duration = TimeSpan.FromMinutes(durationInMinutes);
+                    double totalRatio = group.PumpingCycles.Sum(g => g.Ratio);
 
                     for (int i = 0; i < numberOfDays; i++)
                     {
@@ -113,6 +120,8 @@ namespace Pool.Control.Store
 
                         foreach (var cycle in group.PumpingCycles)
                         {
+                            var duration = TimeSpan.FromMinutes(Math.Round(durationPerDay.TotalMinutes * cycle.Ratio / totalRatio));
+
                             DateTime startTime = cycle.PumpCycleType == PumpCycleType.StartAt
                                 ? time.Add(cycle.DecisionTime)
                                 : time.Add(cycle.DecisionTime - duration);

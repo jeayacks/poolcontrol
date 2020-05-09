@@ -175,14 +175,17 @@ namespace Pool.Control.Tests
                 Assert.IsFalse(context.PinStatus[PinName.ChlorineInhibition]);
                 Assert.IsTrue(context.PinStatus[PinName.PhRegulationInhibition]);
 
-                // Increase pumping duration to check update
+                // Increase pumping duration to pump must stay on
                 context.SystemState.PumpingDurationPerDayInHours.UpdateValue(8);
                 systemTime.Set(time.AddHours(18).AddSeconds(1));
                 context.PoolControlPump.Process();
+                Assert.IsTrue(context.SystemState.Pump.Value);
+                Assert.IsTrue(context.PinStatus[PinName.Pump]);
+
+                systemTime.Set(time.AddHours(22).AddSeconds(1));
+                context.PoolControlPump.Process();
                 Assert.IsFalse(context.SystemState.Pump.Value);
                 Assert.IsFalse(context.PinStatus[PinName.Pump]);
-                Assert.IsFalse(context.PinStatus[PinName.ChlorineInhibition]);
-                Assert.IsFalse(context.PinStatus[PinName.PhRegulationInhibition]);
 
                 // Check next cycle
                 var cycles = context.PoolControlPump.GetCyclesInfo().ToList();

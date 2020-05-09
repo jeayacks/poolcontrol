@@ -98,50 +98,58 @@ namespace Pool.Control
             {
                 pumpOn = true;
             }
-            else if (this.pumpCycle != null)
-            {
-                // Pump must be on, reassign the value after forcing change
-                pumpOn = true;
-
-                if (this.pumpCycle.EndTime < SystemTime.Now)
-                {
-                    // Stop the pump
-                    pumpOn = false;
-                    this.pumpCycle = null;
-
-                    // Update next cycles
-                    this.UpdateNextPumpCycles(false);
-                }
-            }
             else
             {
-                // Pump must be off, reassign the value after forcing change
-                pumpOn = false;
-
-                // This should not append because cycles are updated when daily temperature is updated
-                // Except when the system starts
-                if (this.nextCycles.Count < 3)
+                if (this.pumpCycle != null)
                 {
-                    this.UpdateNextPumpCycles(true);
+                    // Pump must be on, reassign the value after forcing change
+                    pumpOn = true;
+
+                    if (this.pumpCycle.EndTime < SystemTime.Now)
+                    {
+                        // Stop the pump
+                        pumpOn = false;
+                        this.pumpCycle = null;
+
+                        // Update next cycles
+                        this.UpdateNextPumpCycles();
+                    }
+                }
+                else
+                {
+                    // Pump must be off, reassign the value after forcing change
+                    pumpOn = false;
                 }
 
-                // Check next execution
-                var list = this.nextCycles.ToList();
-                foreach (var cycle in list)
+                // Now check if a cycle must be started
+                // New cylcle could start just after previous cycle
+                if (pumpOn == false)
                 {
-                    if (cycle.EndTime <= SystemTime.Now)
+                    // This should not append because cycles are updated when daily temperature is updated
+                    // Except when the system starts
+                    if (this.nextCycles.Count < 3)
                     {
-                        // Expired cycle, remove it (this is should not append)
-                        this.nextCycles.Remove(cycle);
+                        this.UpdateNextPumpCycles();
                     }
-                    else if (cycle.StartTime <= SystemTime.Now)
-                    {
-                        // Start a new cycle
-                        this.nextCycles.Remove(cycle);
 
-                        this.pumpCycle = cycle;
-                        pumpOn = true;
-                        break;
+                    // Check next execution
+                    var list = this.nextCycles.ToList();
+                    foreach (var cycle in list)
+                    {
+                        if (cycle.EndTime <= SystemTime.Now)
+                        {
+                            // Expired cycle, remove it (this is should not append)
+                            this.nextCycles.Remove(cycle);
+                        }
+                        else if (cycle.StartTime <= SystemTime.Now)
+                        {
+                            // Start a new cycle
+                            this.nextCycles.Remove(cycle);
+
+                            this.pumpCycle = cycle;
+                            pumpOn = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -243,30 +251,19 @@ namespace Pool.Control
                         -1);
 
                     // Calculate cycles
-                    this.UpdateNextPumpCycles(true);
+                    this.UpdateNextPumpCycles();
                 }
             }
         }
 
-        private void UpdateNextPumpCycles(bool includeCurrent)
+        private void UpdateNextPumpCycles()
         {
             var temperature = this.systemState.PoolTemperatureDecision.Value;
             var durationPerDay = TimeSpan.FromHours(this.systemState.PumpingDurationPerDayInHours.Value);
 
-            var results = this.poolSettings
+            this.nextCycles = this.poolSettings
                 .GetNextPumpCycles(SystemTime.Now, temperature, durationPerDay, 3)
                 .ToList();
-
-            if (includeCurrent)
-            {
-                this.nextCycles = results;
-            }
-            else
-            {
-                this.nextCycles = results
-                    .Where(d => d.StartTime >= SystemTime.Now)
-                    .ToList();
-            }
         }
 
         private void SwitchPump(bool state)
