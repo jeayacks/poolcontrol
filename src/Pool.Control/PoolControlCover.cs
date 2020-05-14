@@ -6,11 +6,10 @@
 
 namespace Pool.Control
 {
-    using Microsoft.Extensions.Logging;
-    using Pool.Control.Store;
-    using Pool.Hardware;
     using System;
     using System.Threading;
+    using Pool.Control.Store;
+    using Pool.Hardware;
 
     /// <summary>
     /// Control the cover.
@@ -122,8 +121,9 @@ namespace Pool.Control
             this.coverActionInProgress = false;
             this.lastAction = null;
 
-            this.hardwareManager.Write(PinName.CoverPowerInverter, false);
             this.hardwareManager.Write(PinName.CoverPowerSupply, false);
+            Thread.Sleep(300);
+            this.hardwareManager.Write(PinName.CoverPowerInverter, false);
         }
     }
 }
