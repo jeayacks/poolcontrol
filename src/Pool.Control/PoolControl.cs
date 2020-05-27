@@ -6,12 +6,12 @@
 
 namespace Pool.Control
 {
-    using Microsoft.Extensions.Logging;
-    using Pool.Control.Store;
-    using Pool.Hardware;
     using System;
     using System.Linq;
     using System.Threading;
+    using Microsoft.Extensions.Logging;
+    using Pool.Control.Store;
+    using Pool.Hardware;
 
     /// <summary>
     /// Execute the main loop.
@@ -117,7 +117,7 @@ namespace Pool.Control
         /// <returns></returns>
         public void SavePoolSettings(PoolSettings settings)
         {
-            if (settings.SummerPumpingCycles.Count==0|| settings.WinterPumpingCycles.Count==0)
+            if (settings.SummerPumpingCycles.Count == 0 || settings.WinterPumpingCycles.Count == 0)
             {
                 throw new ArgumentException("Invalid cycles");
             }
@@ -126,6 +126,7 @@ namespace Pool.Control
             this.poolSettings.SummerPumpingCycles = settings.SummerPumpingCycles;
             this.poolSettings.WinterPumpingCycles = settings.WinterPumpingCycles;
             this.poolSettings.WorkingMode = settings.WorkingMode;
+            this.poolSettings.TemperatureRunTime = settings.TemperatureRunTime;
             this.storeService.WritePoolSettings(this.poolSettings, settingsFileName);
 
             this.poolControlLoop.ResetSettings();
