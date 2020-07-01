@@ -4,9 +4,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System.Linq;
 using Pool.Control;
 using Pool.Hardware;
-using System.Linq;
 
 namespace Pool.Controllers
 {
@@ -49,6 +49,16 @@ namespace Pool.Controllers
         /// Pumping time per day
         /// </summary>
         public double PumpingDurationPerDayInHours { get; set; }
+
+        /// <summary>
+        /// Temperature value used to calculate running time
+        /// </summary>
+        public double PoolTemperatureMinOfTheDay { get; set; }
+
+        /// <summary>
+        /// Temperature value used to calculate running time
+        /// </summary>
+        public double PoolTemperatureMaxOfTheDay { get; set; }
 
         /// <summary>
         /// Pump running.
@@ -103,6 +113,8 @@ namespace Pool.Controllers
                 AirTemperature = systemState.AirTemperature.Value,
                 PoolTemperatureDecision = systemState.PoolTemperatureDecision.Value,
                 PumpingDurationPerDayInHours = systemState.PumpingDurationPerDayInHours.Value,
+                PoolTemperatureMinOfTheDay = systemState.PoolTemperatureMinOfTheDay.Value,
+                PoolTemperatureMaxOfTheDay = systemState.PoolTemperatureMaxOfTheDay.Value,
                 Pump = outputs.Single(o => o.Output == PinName.Pump).State,
                 PumpForceOff = systemState.PumpForceOff.Value,
                 PumpForceOn = systemState.PumpForceOn.Value,

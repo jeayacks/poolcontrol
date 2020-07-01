@@ -1,13 +1,10 @@
-using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Pool.Control.Store;
 using Pool.Hardware;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Pool.Control.Tests
 {
@@ -34,7 +31,8 @@ namespace Pool.Control.Tests
                 // Default values are not yet modified, require more than the delay
                 Assert.AreEqual(23, context.SystemState.PoolTemperature.Value);
                 Assert.AreEqual(23, context.SystemState.PoolTemperatureDecision.Value);
-                Assert.AreEqual(0, context.SystemState.PoolTemperatureMaxOfTheDay.Value);
+                Assert.AreEqual(-1, context.SystemState.PoolTemperatureMinOfTheDay.Value);
+                Assert.AreEqual(-1, context.SystemState.PoolTemperatureMaxOfTheDay.Value);
                 Assert.AreEqual(1, context.SystemState.PumpingDurationPerDayInHours.Value);
 
                 // Set pump ON
@@ -50,7 +48,8 @@ namespace Pool.Control.Tests
                 Assert.AreEqual(time, context.SystemState.WaterTemperature.Time);
                 Assert.AreEqual(22, context.SystemState.WaterTemperature.Value);
                 Assert.AreEqual(22, context.SystemState.PoolTemperature.Value);
-                Assert.AreEqual(-1, context.SystemState.PoolTemperatureMaxOfTheDay.Value); // Value reseted
+                Assert.AreEqual(22, context.SystemState.PoolTemperatureMinOfTheDay.Value); // Value reseted
+                Assert.AreEqual(22, context.SystemState.PoolTemperatureMaxOfTheDay.Value); // Value reseted
                 Assert.AreEqual(22, context.SystemState.PoolTemperatureDecision.Value);
                 Assert.AreEqual(4, context.SystemState.PumpingDurationPerDayInHours.Value);
 
@@ -67,6 +66,7 @@ namespace Pool.Control.Tests
                 context.PoolControlPump.Process();
                 Assert.AreEqual(24, context.SystemState.WaterTemperature.Value);
                 Assert.AreEqual(24, context.SystemState.PoolTemperature.Value);
+                Assert.AreEqual(22, context.SystemState.PoolTemperatureMinOfTheDay.Value);
                 Assert.AreEqual(24, context.SystemState.PoolTemperatureMaxOfTheDay.Value);
 
                 // Decrease temp, pump still running
@@ -76,6 +76,7 @@ namespace Pool.Control.Tests
                 context.PoolControlPump.Process();
                 Assert.AreEqual(21, context.SystemState.WaterTemperature.Value);
                 Assert.AreEqual(21, context.SystemState.PoolTemperature.Value);
+                Assert.AreEqual(21, context.SystemState.PoolTemperatureMinOfTheDay.Value);
                 Assert.AreEqual(24, context.SystemState.PoolTemperatureMaxOfTheDay.Value);
 
                 // Increase temp, pump still running
@@ -86,6 +87,7 @@ namespace Pool.Control.Tests
                 context.PoolControlPump.Process();
                 Assert.AreEqual(28, context.SystemState.WaterTemperature.Value);
                 Assert.AreEqual(28, context.SystemState.PoolTemperature.Value);
+                Assert.AreEqual(21, context.SystemState.PoolTemperatureMinOfTheDay.Value);
                 Assert.AreEqual(28, context.SystemState.PoolTemperatureMaxOfTheDay.Value);
                 Assert.AreEqual(22, context.SystemState.PoolTemperatureDecision.Value);
                 Assert.AreEqual(4, context.SystemState.PumpingDurationPerDayInHours.Value);
@@ -93,16 +95,17 @@ namespace Pool.Control.Tests
                 // Stop pump
                 context.SystemState.Pump.UpdateValue(false);
 
-                // Move to next day
+                // Move to next day, min=21, max=28 = 24,5
                 time = DateTime.Now.Date.AddDays(1);
                 systemTime.Set(time);
                 context.WaterTemperature = 18;
                 context.PoolControlPump.Process();
                 Assert.AreEqual(18, context.SystemState.WaterTemperature.Value);
                 Assert.AreEqual(28, context.SystemState.PoolTemperature.Value);
-                Assert.AreEqual(-1, context.SystemState.PoolTemperatureMaxOfTheDay.Value); // Max reseted
-                Assert.AreEqual(28, context.SystemState.PoolTemperatureDecision.Value);
-                Assert.AreEqual(8, context.SystemState.PumpingDurationPerDayInHours.Value);
+                Assert.AreEqual(24.5, context.SystemState.PoolTemperatureDecision.Value);
+                Assert.AreEqual(4, context.SystemState.PumpingDurationPerDayInHours.Value);
+                Assert.AreEqual(28, context.SystemState.PoolTemperatureMinOfTheDay.Value); // reseted to pool temperature
+                Assert.AreEqual(28, context.SystemState.PoolTemperatureMaxOfTheDay.Value); // reseted to pool temperature
 
                 // Start the pump
                 context.SystemState.Pump.UpdateValue(true);
@@ -113,20 +116,22 @@ namespace Pool.Control.Tests
                 context.PoolControlPump.Process();
                 Assert.AreEqual(17, context.SystemState.WaterTemperature.Value);
                 Assert.AreEqual(17, context.SystemState.PoolTemperature.Value);
-                Assert.AreEqual(17, context.SystemState.PoolTemperatureMaxOfTheDay.Value);
-                Assert.AreEqual(28, context.SystemState.PoolTemperatureDecision.Value);
-                Assert.AreEqual(8, context.SystemState.PumpingDurationPerDayInHours.Value);
+                Assert.AreEqual(24.5, context.SystemState.PoolTemperatureDecision.Value);
+                Assert.AreEqual(4, context.SystemState.PumpingDurationPerDayInHours.Value);
+                Assert.AreEqual(17, context.SystemState.PoolTemperatureMinOfTheDay.Value);
+                Assert.AreEqual(28, context.SystemState.PoolTemperatureMaxOfTheDay.Value);
 
-                // Move to next day
+                // Move to next day, min=17, max=28 = 22
                 time = DateTime.Now.Date.AddDays(2);
                 systemTime.Set(time);
                 context.WaterTemperature = 17;
                 context.PoolControlPump.Process();
                 Assert.AreEqual(17, context.SystemState.WaterTemperature.Value);
                 Assert.AreEqual(17, context.SystemState.PoolTemperature.Value);
-                Assert.AreEqual(-1, context.SystemState.PoolTemperatureMaxOfTheDay.Value);
-                Assert.AreEqual(17, context.SystemState.PoolTemperatureDecision.Value);
-                Assert.AreEqual(1, context.SystemState.PumpingDurationPerDayInHours.Value);
+                Assert.AreEqual(22.5, context.SystemState.PoolTemperatureDecision.Value);
+                Assert.AreEqual(4, context.SystemState.PumpingDurationPerDayInHours.Value);
+                Assert.AreEqual(17, context.SystemState.PoolTemperatureMinOfTheDay.Value);
+                Assert.AreEqual(17, context.SystemState.PoolTemperatureMaxOfTheDay.Value);
             }
         }
 

@@ -6,13 +6,12 @@
 
 namespace Pool.Control
 {
-    using Microsoft.Extensions.Logging;
-    using Pool.Control.Store;
-    using Pool.Hardware;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using Pool.Control.Store;
+    using Pool.Hardware;
 
     /// <summary>
     /// Manages the pump functionning time
@@ -224,11 +223,18 @@ namespace Pool.Control
                 {
                     this.systemState.PoolTemperature.UpdateValue(temperature);
 
+                    // Update the min of the day
+                    if (temperature < this.systemState.PoolTemperatureMinOfTheDay.Value || this.systemState.PoolTemperatureMinOfTheDay.Value <= 0)
+                    {
+                        // Change the value but not the time
+                        this.systemState.PoolTemperatureMinOfTheDay.UpdateValueOnly(temperature);
+                    }
+
                     // Update the max of the day
                     if (temperature > this.systemState.PoolTemperatureMaxOfTheDay.Value)
                     {
                         // Change the value but not the time
-                        this.systemState.PoolTemperatureMaxOfTheDay.UpdateValueOnly(this.systemState.PoolTemperature.Value);
+                        this.systemState.PoolTemperatureMaxOfTheDay.UpdateValueOnly(temperature);
                     }
                 }
             }
@@ -237,18 +243,20 @@ namespace Pool.Control
             if (this.systemState.PoolTemperatureMaxOfTheDay.Time.Date < SystemTime.Now.Date)
             {
                 // Check value (second security if temperature not assigned)
-                if (this.systemState.PoolTemperatureMaxOfTheDay.Value > 0)
+                if (this.systemState.PoolTemperatureMinOfTheDay.Value > 0
+                    && this.systemState.PoolTemperatureMinOfTheDay.Value < 40
+                    && this.systemState.PoolTemperatureMaxOfTheDay.Value > 0
+                    && this.systemState.PoolTemperatureMaxOfTheDay.Value < 40)
                 {
-                    double decistionTemperature = this.systemState.PoolTemperatureMaxOfTheDay.Value;
-                    this.systemState.PoolTemperatureDecision.UpdateValue(decistionTemperature);
+                    double decision = (this.systemState.PoolTemperatureMaxOfTheDay.Value + this.systemState.PoolTemperatureMinOfTheDay.Value) / 2;
+                    this.systemState.PoolTemperatureDecision.UpdateValue(decision);
 
-                    var pumpingDuration = this.poolSettings.GetHoursPumpingTimePerDay(decistionTemperature);
+                    var pumpingDuration = this.poolSettings.GetHoursPumpingTimePerDay(decision);
                     this.systemState.PumpingDurationPerDayInHours.UpdateValue(pumpingDuration);
 
-                    // Reset max temperature
-                    this.systemState.PoolTemperatureMaxOfTheDay = new SampleValue<double>(
-                        SystemTime.Now.Date,
-                        -1);
+                    // Reset min and max temperature
+                    this.systemState.PoolTemperatureMinOfTheDay = new SampleValue<double>(SystemTime.Now.Date, this.systemState.PoolTemperature.Value);
+                    this.systemState.PoolTemperatureMaxOfTheDay = new SampleValue<double>(SystemTime.Now.Date, this.systemState.PoolTemperature.Value);
 
                     // Calculate cycles
                     this.UpdateNextPumpCycles();

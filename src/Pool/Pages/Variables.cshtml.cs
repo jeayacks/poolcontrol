@@ -19,6 +19,7 @@ namespace Pool.Pages
             this.Variables = new List<VariableItem>();
             this.Variables.Add(VariableItem.Create("Température extérieure", state.AirTemperature));
             this.Variables.Add(VariableItem.Create("Température eau brute (sonde)", state.WaterTemperature));
+            this.Variables.Add(VariableItem.Create("Température min jour", state.PoolTemperatureMinOfTheDay));
             this.Variables.Add(VariableItem.Create("Température max jour", state.PoolTemperatureMaxOfTheDay));
             this.Variables.Add(VariableItem.Create("Température de consigne", state.PoolTemperatureDecision));
             this.Variables.Add(VariableItem.Create("Température du bassin", state.PoolTemperature));

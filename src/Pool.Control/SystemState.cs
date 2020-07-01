@@ -7,9 +7,6 @@
 namespace Pool.Control
 {
     using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Store the current states.
@@ -24,7 +21,8 @@ namespace Pool.Control
             this.PoolTemperature = new SampleValue<double>(time, 23);
             this.AirTemperature = new SampleValue<double>(time, 23);
             this.PoolTemperatureDecision = new SampleValue<double>(time, 23);
-            this.PoolTemperatureMaxOfTheDay = new SampleValue<double>(time, 0);
+            this.PoolTemperatureMinOfTheDay = new SampleValue<double>(time, -1);
+            this.PoolTemperatureMaxOfTheDay = new SampleValue<double>(time, -1);
             this.PumpingDurationPerDayInHours = new SampleValue<double>(time, 1);
             this.Pump = new SampleValue<bool>(time, false);
             this.PumpForceOff = new SampleValue<bool>(time, false);
@@ -50,6 +48,11 @@ namespace Pool.Control
         /// Temperature value used to calculate running time
         /// </summary>
         public SampleValue<double> PoolTemperatureDecision { get; set; }
+
+        /// <summary>
+        /// Temperature value used to calculate running time
+        /// </summary>
+        public SampleValue<double> PoolTemperatureMinOfTheDay { get; set; }
 
         /// <summary>
         /// Temperature value used to calculate running time
