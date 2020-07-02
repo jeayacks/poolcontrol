@@ -249,6 +249,7 @@ namespace Pool.Control
                     && this.systemState.PoolTemperatureMaxOfTheDay.Value < 40)
                 {
                     double decision = (this.systemState.PoolTemperatureMaxOfTheDay.Value + this.systemState.PoolTemperatureMinOfTheDay.Value) / 2;
+                    decision = Math.Round(decision, 1);
                     this.systemState.PoolTemperatureDecision.UpdateValue(decision);
 
                     var pumpingDuration = this.poolSettings.GetHoursPumpingTimePerDay(decision);
