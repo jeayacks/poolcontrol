@@ -121,7 +121,7 @@ namespace Pool.Control
                 }
 
                 // Now check if a cycle must be started
-                // New cylcle could start just after previous cycle
+                // New cycle could start just after previous cycle
                 if (pumpOn == false)
                 {
                     // This should not append because cycles are updated when daily temperature is updated
@@ -151,6 +151,23 @@ namespace Pool.Control
                         }
                     }
                 }
+
+                // Winter mode, frost protection
+                if (this.poolSettings.WorkingMode == PoolWorkingMode.Winter && pumpOn == false)
+                {
+                    // If water temperature of the pipe < 7°, inject a new cycle
+                    if (this.systemState.WaterTemperature.Value < this.poolSettings.FrostProtection.TemperatureActivation)
+                    {
+                        // Add pumping cycle of 15 minutes
+                        this.pumpCycle = new PumpCycle(
+                            SystemTime.Now,
+                            SystemTime.Now.AddMinutes(this.poolSettings.FrostProtection.RecyclingDurationMinutes),
+                            false,
+                            false);
+
+                        pumpOn = true;
+                    }
+                }
             }
 
             if (pumpOn != this.currentPumpStatus)
@@ -177,8 +194,10 @@ namespace Pool.Control
         /// <summary>
         /// Used to reset the precalculated cycles
         /// </summary>
-        public void ResetSettings()
+        public void ResetSettings(PoolSettings poolSettings)
         {
+            this.poolSettings = poolSettings;
+
             this.nextCycles.Clear();
         }
 

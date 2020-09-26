@@ -108,7 +108,7 @@ namespace Pool.Controllers
                         systemState.PumpForceOff.UpdateValue(state.Active);
                         systemState.PumpForceOn.UpdateValue(false);
                     }
-                    break;
+                    return this.Ok();
 
                 case "PumpForceOn":
                     if (systemState.PumpForceOn.Value != state.Active)
@@ -116,7 +116,7 @@ namespace Pool.Controllers
                         systemState.PumpForceOn.UpdateValue(state.Active);
                         systemState.PumpForceOff.UpdateValue(false);
                     }
-                    break;
+                    return this.Ok();
             }
 
             return this.BadRequest("Switch not found");

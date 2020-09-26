@@ -125,11 +125,12 @@ namespace Pool.Control
             this.poolSettings.CoverCylcleDurationInSeconds = settings.CoverCylcleDurationInSeconds;
             this.poolSettings.SummerPumpingCycles = settings.SummerPumpingCycles;
             this.poolSettings.WinterPumpingCycles = settings.WinterPumpingCycles;
+            this.poolSettings.FrostProtection = settings.FrostProtection;
             this.poolSettings.WorkingMode = settings.WorkingMode;
             this.poolSettings.TemperatureRunTime = settings.TemperatureRunTime;
             this.storeService.WritePoolSettings(this.poolSettings, settingsFileName);
 
-            this.poolControlLoop.ResetSettings();
+            this.poolControlLoop.ResetSettings(this.poolSettings);
         }
 
         /// <summary>

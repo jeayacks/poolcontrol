@@ -23,6 +23,7 @@ namespace Pool.Control.Store
             this.CoverCylcleDurationInSeconds = 90;
             this.SummerPumpingCycles = new List<PumpCycleGroupSetting>();
             this.WinterPumpingCycles = new List<PumpCycleGroupSetting>();
+            this.FrostProtection = new FrostProtectionSetting();
             this.TemperatureRunTime = new List<TemperatureRunTime>();
         }
 
@@ -47,6 +48,11 @@ namespace Pool.Control.Store
         public List<PumpCycleGroupSetting> WinterPumpingCycles { get; set; }
 
         /// <summary>
+        /// Gets or sets frost settings.
+        /// </summary>
+        public FrostProtectionSetting FrostProtection { get; set; }
+
+        /// <summary>
         /// Gets or sets the puming time values
         /// </summary>
         public List<TemperatureRunTime> TemperatureRunTime { get; set; }
@@ -63,14 +69,16 @@ namespace Pool.Control.Store
 
             if (this.TemperatureRunTime.Count > 0)
             {
+                // Take the first
                 result = this.TemperatureRunTime.First().RunTimeHours;
-            }
 
-            foreach (var item in this.TemperatureRunTime)
-            {
-                if (temperature >= item.Temperature)
+                // Find the higher temp item
+                foreach (var item in this.TemperatureRunTime)
                 {
-                    result = item.RunTimeHours;
+                    if (temperature >= item.Temperature)
+                    {
+                        result = item.RunTimeHours;
+                    }
                 }
             }
 

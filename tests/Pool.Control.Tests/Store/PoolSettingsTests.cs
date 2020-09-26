@@ -191,6 +191,7 @@ namespace Pool.Control.Tests
             Assert.AreEqual(4, settings.GetNextPumpCycles(time, 25, TimeSpan.FromHours(3), 1).Count());
             Assert.AreEqual(4, settings.GetNextPumpCycles(time, 30, TimeSpan.FromHours(3), 1).Count());
         }
+
         [TestMethod]
         public void CyclesWithRatios()
         {

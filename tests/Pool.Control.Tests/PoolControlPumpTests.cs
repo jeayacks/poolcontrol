@@ -212,16 +212,10 @@ namespace Pool.Control.Tests
 
                 context.WaterTemperature = 12;
                 context.PoolSettings.WorkingMode = PoolWorkingMode.Winter;
-                context.PoolSettings.WinterPumpingCycles.Clear();
-                context.PoolSettings.WinterPumpingCycles.Add(new PumpCycleGroupSetting());
-                context.PoolSettings.WinterPumpingCycles[0].PumpingCycles.Add(new PumpCycleSetting()
-                {
-                    DecisionTime = TimeSpan.FromHours(5),
-                    PumpCycleType = PumpCycleType.StartAt,
-                });
 
                 context.SystemState.PumpingDurationPerDayInHours.UpdateValue(1);
                 context.PoolControlPump.Process();
+                Assert.IsFalse(context.PinStatus[PinName.Pump]);
 
                 systemTime.Set(time.AddHours(5));
                 context.PoolControlPump.Process();
@@ -230,6 +224,43 @@ namespace Pool.Control.Tests
                 systemTime.Set(time.AddHours(6).AddSeconds(1));
                 context.PoolControlPump.Process();
                 Assert.IsFalse(context.PinStatus[PinName.Pump]);
+
+                // Frost protection
+                context.WaterTemperature = 5;
+                systemTime.Set(time.AddHours(24));
+                context.PoolControlPump.Process();
+                Assert.IsTrue(context.PinStatus[PinName.Pump]);
+
+                // Still running for 15min
+                context.WaterTemperature = 12;
+                systemTime.Set(time.AddHours(24).AddMinutes(10));
+                context.PoolControlPump.Process();
+                Assert.IsTrue(context.PinStatus[PinName.Pump]);
+               
+                // Stop after 15min
+                context.WaterTemperature = 12;
+                systemTime.Set(time.AddHours(24).AddMinutes(16));
+                context.PoolControlPump.Process();
+                Assert.IsFalse(context.PinStatus[PinName.Pump]);
+
+                // Test frost and normal cycle at same time
+                context.WaterTemperature = 5;
+                systemTime.Set(time.AddHours(29));
+                context.PoolControlPump.Process();
+                Assert.IsTrue(context.PinStatus[PinName.Pump]);
+
+                // Still running at 6h
+                context.WaterTemperature = 12;
+                systemTime.Set(time.AddHours(30));
+                context.PoolControlPump.Process();
+                Assert.IsTrue(context.PinStatus[PinName.Pump]);
+
+                // Stopped at 6h01
+                context.WaterTemperature = 12;
+                systemTime.Set(time.AddHours(30).AddMinutes(1));
+                context.PoolControlPump.Process();
+                Assert.IsFalse(context.PinStatus[PinName.Pump]);
+
             }
         }
 
@@ -271,7 +302,7 @@ namespace Pool.Control.Tests
                 context.PoolControlPump.Process();
                 Assert.IsFalse(context.PinStatus[PinName.Pump]);
 
-                // Disable force OFF during pumpin cycle
+                // Disable force OFF during pumping cycle
                 systemTime.Set(time.AddHours(9));
                 context.SystemState.PumpForceOff.UpdateValue(false);
                 context.PoolControlPump.Process();
@@ -375,6 +406,14 @@ namespace Pool.Control.Tests
                     PumpCycleType = PumpCycleType.StartAt,
                     ChlorineInhibition = false,
                     PhRegulationInhibition = true,
+                });
+
+                settings.WinterPumpingCycles.Clear();
+                settings.WinterPumpingCycles.Add(new PumpCycleGroupSetting());
+                settings.WinterPumpingCycles[0].PumpingCycles.Add(new PumpCycleSetting()
+                {
+                    DecisionTime = TimeSpan.FromHours(5),
+                    PumpCycleType = PumpCycleType.StartAt,
                 });
 
                 settings.TemperatureRunTime.Add(new TemperatureRunTime() { Temperature = 15, RunTimeHours = 1 });

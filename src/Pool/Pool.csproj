@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>pool</AssemblyName>
+    <UserSecretsId>43863f8b-3ba6-4cf4-bec6-36c111f687f8</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
