@@ -39,7 +39,7 @@ namespace Pool.Control.Tests
                 context.SystemState.Pump.UpdateValue(true);
 
                 // Move significant time after pump start
-                time = time.AddSeconds(PoolControlPump.PumpRunTimeToAcquirePoolTemperature);
+                time = time.AddSeconds(PoolControlPump.PumpRunDelayToAcquirePoolTemperature);
                 systemTime.Set(time);
                 context.WaterTemperature = 22;
                 context.PoolControlPump.Process();
@@ -110,7 +110,7 @@ namespace Pool.Control.Tests
                 // Start the pump
                 context.SystemState.Pump.UpdateValue(true);
 
-                time = time.AddSeconds(PoolControlPump.PumpRunTimeToAcquirePoolTemperature);
+                time = time.AddSeconds(PoolControlPump.PumpRunDelayToAcquirePoolTemperature);
                 systemTime.Set(time);
                 context.WaterTemperature = 17;
                 context.PoolControlPump.Process();

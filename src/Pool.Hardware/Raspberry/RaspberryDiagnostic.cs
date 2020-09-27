@@ -16,11 +16,11 @@ namespace Pool.Hardware
     /// <summary>
     /// Driver implementation
     /// </summary>
-    public class RaspberryDiagnostic
+    public static class RaspberryDiagnostic
     {
         public static void RunAndDisplay()
         {
-            var controller = new GpioController(PinNumberingScheme.Logical);
+            using var controller = new GpioController(PinNumberingScheme.Logical);
 
             for (int i = 0; i < controller.PinCount; i++)
             {

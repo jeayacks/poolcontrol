@@ -27,7 +27,7 @@ namespace Pool.Control
         /// <summary>
         /// Interval to read temperature.
         /// </summary>
-        public const int PumpRunTimeToAcquirePoolTemperature = 900;
+        public const int PumpRunDelayToAcquirePoolTemperature = 900;
 
         /// <summary>
         /// Delay used to reset forcing states
@@ -86,6 +86,8 @@ namespace Pool.Control
 
             this.TemperatureAcquisition();
 
+            this.UpdatePumpingDurationPerDay();
+
             bool pumpOn;
 
             // Process forcing options first
@@ -101,7 +103,7 @@ namespace Pool.Control
             {
                 if (this.pumpCycle != null)
                 {
-                    // Pump must be on, reassign the value after forcing change
+                    // Cycle in progress, pump is on
                     pumpOn = true;
 
                     if (this.pumpCycle.EndTime < SystemTime.Now)
@@ -155,10 +157,10 @@ namespace Pool.Control
                 // Winter mode, frost protection
                 if (this.poolSettings.WorkingMode == PoolWorkingMode.Winter && pumpOn == false)
                 {
-                    // If water temperature of the pipe < 7°, inject a new cycle
+                    // If water temperature of the pipe < threshold, inject a new cycle
                     if (this.systemState.WaterTemperature.Value < this.poolSettings.FrostProtection.TemperatureActivation)
                     {
-                        // Add pumping cycle of 15 minutes
+                        // Add pumping cycle of xx minutes
                         this.pumpCycle = new PumpCycle(
                             SystemTime.Now,
                             SystemTime.Now.AddMinutes(this.poolSettings.FrostProtection.RecyclingDurationMinutes),
@@ -238,7 +240,7 @@ namespace Pool.Control
                 this.systemState.WaterTemperature.UpdateValue(temperature);
 
                 // if pump is running for more than the required functionning time, copy the temperature
-                if (this.systemState.Pump.Value == true && this.systemState.Pump.Time.AddSeconds(PumpRunTimeToAcquirePoolTemperature) <= SystemTime.Now)
+                if (this.systemState.Pump.Value == true && this.systemState.Pump.Time.AddSeconds(PumpRunDelayToAcquirePoolTemperature) <= SystemTime.Now)
                 {
                     this.systemState.PoolTemperature.UpdateValue(temperature);
 
@@ -257,20 +259,25 @@ namespace Pool.Control
                     }
                 }
             }
+        }
 
-            // Copy the pool max temperature to "decision temperature" once a day at midnight
+        private void UpdatePumpingDurationPerDay()
+        {
+            // Copy the pool temperature to "decision temperature" once a day at midnight
             if (this.systemState.PoolTemperatureMaxOfTheDay.Time.Date < SystemTime.Now.Date)
             {
-                // Check value (second security if temperature not assigned)
+                // Check value (security if temperature not properly assigned)
                 if (this.systemState.PoolTemperatureMinOfTheDay.Value > 0
                     && this.systemState.PoolTemperatureMinOfTheDay.Value < 40
                     && this.systemState.PoolTemperatureMaxOfTheDay.Value > 0
                     && this.systemState.PoolTemperatureMaxOfTheDay.Value < 40)
                 {
+                    // Take the mean on min and max
                     double decision = (this.systemState.PoolTemperatureMaxOfTheDay.Value + this.systemState.PoolTemperatureMinOfTheDay.Value) / 2;
                     decision = Math.Round(decision, 1);
                     this.systemState.PoolTemperatureDecision.UpdateValue(decision);
 
+                    // Calculate pumping duration
                     var pumpingDuration = this.poolSettings.GetHoursPumpingTimePerDay(decision);
                     this.systemState.PumpingDurationPerDayInHours.UpdateValue(pumpingDuration);
 
