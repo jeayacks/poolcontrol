@@ -21,7 +21,7 @@ namespace Pool.Hardware
         /// <summary>
         /// The logger.
         /// </summary>
-        private ILogger<RaspberryDiagnostic> logger;
+        private ILogger<RaspberryDriver> logger;
 
         /// <summary>
         /// The controller.
@@ -38,7 +38,7 @@ namespace Pool.Hardware
         /// </summary>
         private List<OneWireThermometerDevice> devices = new List<OneWireThermometerDevice>();
 
-        public RaspberryDriver(ILogger<RaspberryDiagnostic> logger)
+        public RaspberryDriver(ILogger<RaspberryDriver> logger)
         {
             this.logger = logger;
         }
