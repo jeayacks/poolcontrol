@@ -3,7 +3,6 @@
 The Rapsberry solution which automates your swimming pool !
 
 Manages pump cycles depending on water temperature and protect your swimming pool during the winter against frost.
-
 Web APIs enable integration with your favorite home automation system.
 
 ![.NET Core](https://github.com/bluewaterwise/poolcontrol/workflows/.NET%20Core/badge.svg)
@@ -12,10 +11,14 @@ Example of integration in [Home assistant](https://www.home-assistant.io/):
 
 ![Home assistant integration](doc/medias/home-assistant-screenshot.png)
 
+See my [home assistant configuration example](doc/home-assistant-integration.md) file.
+
+
 ## The context
 
-Because for me swimming is a pleasure, I don't want to spend a lot of time for setting up the water filtration and the treatements, minimum is the best :-).
-The initial goal is to automaticaly adjust the pumping duration according the water temperature with few modifications of the existing system.
+Because for me swimming is a pleasure, I don't want to spend a lot of time for setting up the water filtration and the treatments, minimum is the best :-).
+The principle is to automatically adjust the pumping duration according the water temperature with few modifications of the existing system.
+I decided to deploy a specific system instead of using my existing home automation installation, mainly for independence reasons, this system can completely operate without being connected.
 
 ![Physical system](doc/medias/swimming-pool-installation.svg)
 
