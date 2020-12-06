@@ -1,6 +1,6 @@
 # Raspberry swimming pool control
 
-The Rapsberry solution which automates your swimming pool !
+The Rapsberry DotNET solution which automates your swimming pool !
 
 Manages pump cycles depending on water temperature and protect your swimming pool during the winter against frost.
 Web APIs enable integration with your favorite home automation system.
