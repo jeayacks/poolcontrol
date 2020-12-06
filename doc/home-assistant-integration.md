@@ -1,8 +1,7 @@
 # Home assistant integration
 
 This is my own integration of the pool controller into Home Assistant.
-
-Please visit [Home assistant web site](https://www.home-assistant.io/) for complete documentation.
+Please visit [Home assistant web site](https://www.home-assistant.io/) for complete presentation of home assistant.
 
 ## Integrate the pool controller
 
@@ -100,10 +99,10 @@ sensor:
 ```yml
 homeassistant:
   customize:
-    switch.swimming_pool_deck-light:
+    switch.swimming_deck_light:
       icon: mdi:lightbulb-outline
 
-    switch.swimming_pool_pool_light:
+    switch.swimming_pool_light:
       icon: mdi:lightbulb-outline
 
 
@@ -123,81 +122,59 @@ binary_sensor:
 switch:
   - platform: template
     switches:
-      swimming_pool_deck-light:
+      swimming_deck_light:
         value_template: '{{ states.sensor.swimming_pool_rpi.attributes["deckLight"] }}'
         turn_on:
           - service: rest_command.swimming_pool_rpi_switch_on
             data:
               switch_name: DeckLight
-          - service: homeassistant.update_entity
-            data:
-              entity_id: sensor.swimming_pool_rpi
         turn_off:
           - service: rest_command.swimming_pool_rpi_switch_off
             data:
               switch_name: DeckLight
-          - service: homeassistant.update_entity
-            data:
-              entity_id: sensor.swimming_pool_rpi
         friendly_name: Deck light
 
-      swimming_pool_pool_light:
+      swimming_pool_light:
         value_template: '{{ states.sensor.swimming_pool_rpi.attributes["swimmingPoolLight"] }}'
         turn_on:
           - service: rest_command.swimming_pool_rpi_switch_on
             data:
               switch_name: swimmingPoolLight
-          - service: homeassistant.update_entity
-            data:
-              entity_id: sensor.swimming_pool_rpi
         turn_off:
           - service: rest_command.swimming_pool_rpi_switch_off
             data:
               switch_name: swimmingPoolLight
-          - service: homeassistant.update_entity
-            data:
-              entity_id: sensor.swimming_pool_rpi
         friendly_name: Pool light
 
-      swimming_pool_pump_run_manual_force_on:
+      swimming_pool_pump_manual_force_on:
         value_template: '{{ states.sensor.swimming_pool_rpi.attributes["pumpForceOn"] }}'
         turn_on:
           - service: rest_command.swimming_pool_rpi_switch_on
             data:
               switch_name: PumpForceOn
-          - service: homeassistant.update_entity
-            data:
-              entity_id: sensor.swimming_pool_rpi
         turn_off:
           - service: rest_command.swimming_pool_rpi_switch_off
             data:
               switch_name: PumpForceOn
-          - service: homeassistant.update_entity
-            data:
-              entity_id: sensor.swimming_pool_rpi
         friendly_name: Pump - Manual ON
 
-      swimming_pool_pump_run_manual_force_off:
+      swimming_pool_pump_manual_force_off:
         value_template: '{{ states.sensor.swimming_pool_rpi.attributes["pumpForceOff"] }}'
         turn_on:
           - service: rest_command.swimming_pool_rpi_switch_on
             data:
               switch_name: PumpForceOff
-          - service: homeassistant.update_entity
-            data:
-              entity_id: sensor.swimming_pool_rpi
         turn_off:
           - service: rest_command.swimming_pool_rpi_switch_off
             data:
               switch_name: PumpForceOff
-          - service: homeassistant.update_entity
-            data:
-              entity_id: sensor.swimming_pool_rpi
         friendly_name: Pump - Manual OFF
 
 ```
 
 ## Declare covers
+
+There is no position feedback of the covers (`position_template: "{{ 50 }}"`)
 
 ```yml
 cover:
@@ -246,32 +223,32 @@ automation:
       at: "03:00:00"
     action:
       - service: switch.turn_off
-        entity_id: switch.swimming_pool_deck-light
+        entity_id: switch.swimming_deck_light
       - service: switch.turn_off
-        entity_id: switch.swimming_pool_pool_light
+        entity_id: switch.swimming_pool_light
 
   - alias: Pool - Disable manual ON forcing
     initial_state: true
     trigger:
       platform: state
-      entity_id: switch.swimming_pool_pump_run_manual_force_on
+      entity_id: switch.swimming_pool_pump_manual_force_on
       to: "on"
       for:
         hours: "{{ states('input_number.swimming_pool_pump_manual_duration')|int }}"
     action:
       service: switch.turn_off
-      entity_id: switch.swimming_pool_pump_run_manual_force_on
+      entity_id: switch.swimming_pool_pump_manual_force_on
 
   - alias: Pool - Disable manual OFF forcing
     initial_state: true
     trigger:
       platform: state
-      entity_id: switch.swimming_pool_pump_run_manual_force_off
+      entity_id: switch.swimming_pool_pump_manual_force_off
       to: "on"
       for:
         hours: "{{ states('input_number.swimming_pool_pump_manual_duration')|int }}"
     action:
       service: switch.turn_off
-      entity_id: switch.swimming_pool_pump_run_manual_force_off
+      entity_id: switch.swimming_pool_pump_manual_force_off
 
 ```

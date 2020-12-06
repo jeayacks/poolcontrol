@@ -1,13 +1,16 @@
 ﻿@page
 @model SettingsEditorModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Réglages";
+    ViewData["Title"] = Localizer["Settings"];
 }
 
-    <form method="post">
-        <div class="form-group">
-            <label for="exampleFormControlTextarea1">Reglages</label>
-            <textarea  asp-for="JsonSettings"  class="form-control" id="exampleFormControlTextarea1" rows="25"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Enregistrer</button>
-    </form>
+<form method="post">
+    <div class="form-group">
+        <label for="exampleFormControlTextarea1">@Localizer["Settings"]</label>
+        <textarea asp-for="JsonSettings" class="form-control" id="exampleFormControlTextarea1" rows="25"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">@Html.Encode(Localizer["Save"].Value)</button>
+</form>

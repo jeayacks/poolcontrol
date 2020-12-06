@@ -1,30 +1,33 @@
 ﻿@page
 @model SettingsModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Réglages";
+    ViewData["Title"] = Localizer["Configuration"];
 }
 
 <form method="post">
     <!-- Input and Submit elements -->
 
     <div class="card border-primary mb-2">
-        <div class="card-header text-white bg-primary">Configuration générale</div>
+        <div class="card-header text-white bg-primary">
+            @Localizer["Configuration"]
+        </div>
         <div class="card-body">
             <div class="m-1">
-                Réglages des cycles de pompage.
+                @Localizer["CycleSettings"]
             </div>
             <div class="m-2">
-                <button type="submit" onclick="return confirm('Voulez-vous changer de mode ?')" class="btn btn-danger" value="changeMode">@Model.SwitchButtonModeText</button>
+                <button type="submit" onclick="return confirm('Do you want to change ?')" class="btn btn-danger" value="changeMode">@Html.Encode(Model.SummerMode ? Localizer["SummerMode"].Value : Localizer["WinterMode"].Value) </button>
             </div>
             <div class="m-2">
-                Accéder aux réglages
+                @Localizer["AccessSettings"]
             </div>
             <div class="m-2">
                 <a href="SettingsEditor" class="btn btn-primary">
-                    Modifier les réglages
+                    @Localizer["ChangeSettings"]
                 </a>
             </div>
         </div>
     </div>
-
 </form>
