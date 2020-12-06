@@ -1,4 +1,4 @@
-# Raspberry pool control
+# Raspberry swimming pool control
 
 The Rapsberry solution which automates your swimming pool !
 
