@@ -1,62 +1,63 @@
 ﻿@page
+@using Microsoft.AspNetCore.Mvc.Localization
 @model IndexModel
+@inject IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Accueil";
+    ViewData["Title"] = @Localizer["Home"];
 }
-
-
 
 <div class="card-deck">
     <div class="card border-primary mb-2">
-        <div class="card-header text-white bg-primary">Piscine</div>
+        <div class="card-header text-white bg-primary">@Localizer["SwimmingPool"]</div>
         <div class="card-body text-primary">
             <table class="table table-sm">
                 <tbody>
                     <tr>
-                        <td>Mode:</td>
+                        <td>@Localizer["Mode"]</td>
                         <td>
                             @if (Model.GeneralState.SummerMode)
                             {
-                                <i>Eté </i>
+                                <i>@Localizer["Summer"] </i>
                                 <i class="fas fa-sun text-warning"></i>
                             }
                             else
                             {
-                                <i>Hiver </i>
+                                <i>@Localizer["Winter"] </i>
                                 <i class="far fa-snowflake"></i>
                             }
                         </td>
                     </tr>
                     <tr>
-                        <td>Filtration :</td>
+                        <td>@Localizer["Filtration"]</td>
                         <td>
                             <i class="@(Model.GeneralState.Pump ? "fas fa-power-off text-success":"")"></i>
-                            <i>@(Model.GeneralState.Pump ? " Marche" : " Arret")</i>
+                            <i>@(Model.GeneralState.Pump ? Localizer["On"] : @Localizer["Off"])</i>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="2">@Model.GeneralState.Status</td>
                     </tr>
                     <tr>
-                        <td>Bassin :</td>
+                        <td>@Localizer["Bassin"]</td>
                         <td>@Model.GeneralState.PoolTemperature °C</td>
                     </tr>
                     <tr>
-                        <td>Temps de filtration :</td>
+                        <td>@Localizer["FiltrationDuration"]</td>
                         <td>@Model.GeneralState.PumpingDurationPerDayInHours h</td>
                     </tr>
                     <tr>
-                        <td>Forçage marche / arrêt :</td>
+                        <td>@Localizer["PumpForcing"]</td>
                         <td>
                             @if (Model.GeneralState.PumpForceOff)
                             {
                                 <i class="fas fa-power-off text-danger"></i>
-                                <i> Arrêt</i>
+                                <i> @Localizer["Off"]</i>
                             }
                             @if (Model.GeneralState.PumpForceOn)
                             {
                                 <i class="fas fa-power-off text-danger"></i>
-                                <i> Marche</i>
+                                <i> @Localizer["On"]</i>
                             }
                         </td>
                     </tr>
@@ -65,15 +66,14 @@
         </div>
     </div>
 
-
     <div class="card border-primary mb-2">
-        <div class="card-header text-white bg-primary">Programmation future</div>
+        <div class="card-header text-white bg-primary">@Localizer["NextProgramming"]</div>
         <div class="card-body text-primary">
             <table class="table table-sm">
                 <thead>
                     <tr>
-                        <th scope="col">Début</th>
-                        <th scope="col">Fin</th>
+                        <th scope="col">@Localizer["Start"]</th>
+                        <th scope="col">@Localizer["End"]</th>
                         <th scope="col">CL</th>
                         <th scope="col">PH</th>
                     </tr>
@@ -93,27 +93,26 @@
         </div>
     </div>
 
-
     <div class="card border-primary mb-2">
-        <div class="card-header text-white bg-primary">Jardin</div>
+        <div class="card-header text-white bg-primary">@Localizer["Garden"]</div>
         <div class="card-body text-primary">
             <table class="table table-sm">
                 <tbody>
                     <tr>
-                        <td>Arrosage:</td>
+                        <td>@Localizer["Watering"]</td>
                         <td>
                             <i class="@(Model.GeneralState.Watering ? "fas fa-power-off text-success":"")"></i>
-                            <i>@(Model.GeneralState.Watering ? " Marche" : " Arret")</i>
+                            <i> @(Model.GeneralState.Watering ? Localizer["On"] : @Localizer["Off"])</i>
                         </td>
                     </tr>
                     <tr>
-                        <td>Eclairage piscine:</td>
+                        <td>@Localizer["PoolLight"]</td>
                         <td>
                             <i class="@(Model.GeneralState.SwimmingPoolLigth ? "fas fa-lightbulb text-success":"far fa-lightbulb text-muted")"></i>
                         </td>
                     </tr>
                     <tr>
-                        <td>Eclairage terrasse:</td>
+                        <td>@Localizer["DeckLight"]</td>
                         <td>
                             <i class="@(Model.GeneralState.DeckLight ? "fas fa-lightbulb text-success":"far fa-lightbulb text-muted")"></i>
                         </td>
@@ -122,15 +121,14 @@
             </table>
         </div>
     </div>
-
 </div>
 
-
-
-<div>
-    @Html.Raw(Model.ChartRenderer.RenderHtml())
+<div class="card border-primary mb-2">
+    <div class="card-header text-white bg-primary">@Localizer["PumpingDuration"]</div>
+    <div class="card-body text-primary">
+        @Html.Raw(Model.ChartRenderer.RenderHtml())
+    </div>
 </div>
-
 
 <div class="card-deck">
 
@@ -142,11 +140,10 @@
             <div class="card-body">
                 @foreach (var item in group.PumpingCycles)
                 {
-                    <div>@(item.IsStartType ? "Démarre à" : "S'arrête à") @item.DecisionTime</div>
+                    <div>@(item.IsStartType ? Localizer["StartAt"] : Localizer["StopAt"]) @item.DecisionTime</div>
                 }
             </div>
         </div>
 
     }
-
 </div>

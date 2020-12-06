@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Highsoft.Web.Mvc.Charts;
 using Highsoft.Web.Mvc.Charts.Rendering;
+
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+
 using Pool.Control;
 using Pool.Control.Store;
 using Pool.Controllers;
@@ -16,8 +20,7 @@ namespace Pool.Pages
 {
     public class IndexModel : PageModel
     {
-
-        public IndexModel(PoolControl poolControl)
+        public IndexModel(PoolControl poolControl, IViewLocalizer localizer)
         {
             this.State = poolControl.GetPoolControlInformation();
             this.GeneralState = GeneralState.ConvertFromPoolState(poolControl.GetPoolControlInformation());
@@ -26,20 +29,19 @@ namespace Pool.Pages
                 ? this.State.PoolSettings.SummerPumpingCycles
                 : this.State.PoolSettings.WinterPumpingCycles;
 
-
             var chartOptions = new Highcharts
             {
                 Title = new Title
                 {
-                    Text = "Temps de pompage"
+                    Text = ""
                 },
-                XAxis = new List<XAxis>() { new XAxis() { Title = new XAxisTitle() { Text = "Température" } } },
-                YAxis = new List<YAxis>() { new YAxis() { Title = new YAxisTitle() { Text = "heures" } } },
+                XAxis = new List<XAxis>() { new XAxis() { Title = new XAxisTitle() { Text = "°C" } } },
+                YAxis = new List<YAxis>() { new YAxis() { Title = new YAxisTitle() { Text = "h" } } },
                 Series = new List<Series>()
                 {
                     new AreaSeries
                     {
-                        Name = "Temps",
+                        Name = "h",
                         Data = this.State.PoolSettings.TemperatureRunTime
                             .Select(d=> new AreaSeriesData(){X = d.Temperature, Y=d.RunTimeHours})
                             .ToList(),

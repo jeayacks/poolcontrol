@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+
 using Pool.Control;
 using Pool.Hardware;
 
@@ -12,6 +14,7 @@ namespace Pool.Pages
     public class SettingsModel : PageModel
     {
         private PoolControl poolControl;
+
         public SettingsModel(PoolControl poolControl, IHardwareManager hardwareManager)
         {
             this.poolControl = poolControl;
@@ -20,8 +23,6 @@ namespace Pool.Pages
         }
 
         public bool SummerMode { get; set; }
-
-        public string SwitchButtonModeText { get; set; }
 
         public void ChangeMode()
         {
@@ -46,10 +47,6 @@ namespace Pool.Pages
             var settings = this.poolControl.GetPoolSettings();
 
             this.SummerMode = settings.WorkingMode == Control.Store.PoolWorkingMode.Summer;
-            this.SwitchButtonModeText = this.SummerMode
-                ? "Mode été, basculer vers le mode hiver"
-                : "Mode hiver, basculer vers le mode été";
-
         }
 
         public void OnPost()
