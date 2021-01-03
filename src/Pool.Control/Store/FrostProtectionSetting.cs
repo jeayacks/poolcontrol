@@ -19,14 +19,20 @@ namespace Pool.Control.Store
     {
         public FrostProtectionSetting()
         {
-            this.TemperatureActivation = 7;
+            this.WaterTemperatureActivation = 7;
+            this.AirTemperatureCondition = 0;
             this.RecyclingDurationMinutes = 15;
         }
 
         /// <summary>
+        /// Gets or sets the air temperature threshold.
+        /// </summary>
+        public double AirTemperatureCondition { get; set; }
+
+        /// <summary>
         /// Gets or sets the temperature threshold.
         /// </summary>
-        public double TemperatureActivation { get; set; }
+        public double WaterTemperatureActivation { get; set; }
 
         /// <summary>
         /// Gets or sets the recycling duration of the pump.

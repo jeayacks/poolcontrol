@@ -10,6 +10,7 @@ namespace Pool.Control
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+
     using Pool.Control.Store;
     using Pool.Hardware;
 
@@ -158,7 +159,8 @@ namespace Pool.Control
                 if (this.poolSettings.WorkingMode == PoolWorkingMode.Winter && pumpOn == false)
                 {
                     // If water temperature of the pipe < threshold, inject a new cycle
-                    if (this.systemState.WaterTemperature.Value < this.poolSettings.FrostProtection.TemperatureActivation)
+                    if (this.systemState.WaterTemperature.Value < this.poolSettings.FrostProtection.WaterTemperatureActivation
+                        && this.systemState.AirTemperature.Value < this.poolSettings.FrostProtection.AirTemperatureCondition)
                     {
                         // Add pumping cycle of xx minutes
                         this.pumpCycle = new PumpCycle(

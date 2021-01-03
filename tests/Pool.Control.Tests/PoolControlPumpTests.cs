@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using Moq;
+
 using Pool.Control.Store;
 using Pool.Hardware;
 
@@ -225,8 +228,16 @@ namespace Pool.Control.Tests
                 context.PoolControlPump.Process();
                 Assert.IsFalse(context.PinStatus[PinName.Pump]);
 
-                // Frost protection
+                // Frost protection, but air temperature greater than 0
+                context.AirTemperature = 10;
                 context.WaterTemperature = 5;
+                systemTime.Set(time.AddHours(12));
+                context.PoolControlPump.Process();
+                Assert.IsFalse(context.PinStatus[PinName.Pump]);
+
+                // Frost protection, air temperature lower than condition
+                context.WaterTemperature = 5;
+                context.AirTemperature = -1;
                 systemTime.Set(time.AddHours(24));
                 context.PoolControlPump.Process();
                 Assert.IsTrue(context.PinStatus[PinName.Pump]);
@@ -236,7 +247,7 @@ namespace Pool.Control.Tests
                 systemTime.Set(time.AddHours(24).AddMinutes(10));
                 context.PoolControlPump.Process();
                 Assert.IsTrue(context.PinStatus[PinName.Pump]);
-               
+
                 // Stop after 15min
                 context.WaterTemperature = 12;
                 systemTime.Set(time.AddHours(24).AddMinutes(16));
@@ -343,6 +354,7 @@ namespace Pool.Control.Tests
             public SystemState SystemState { get; private set; }
             public PoolControlPump PoolControlPump { get; private set; }
             public double WaterTemperature { get; set; }
+            public double AirTemperature { get; set; }
 
             public Dictionary<PinName, bool> PinStatus { get; private set; }
 
@@ -360,10 +372,15 @@ namespace Pool.Control.Tests
                 context.PinStatus.Add(PinName.ChlorineInhibition, false);
                 context.PinStatus.Add(PinName.PhRegulationInhibition, false);
 
-                context.HardwareManager.Setup(s => s.ReadTemperatureValue(It.IsAny<TemperatureSensorName>())).Returns(() =>
-                {
-                    return context.WaterTemperature;
-                });
+                context.HardwareManager.Setup(s => s.ReadTemperatureValue(It.Is<TemperatureSensorName>(t => t == TemperatureSensorName.WaterTemperature))).Returns(() =>
+                  {
+                      return context.WaterTemperature;
+                  });
+
+                context.HardwareManager.Setup(s => s.ReadTemperatureValue(It.Is<TemperatureSensorName>(t => t == TemperatureSensorName.AirTemperature))).Returns(() =>
+                    {
+                        return context.AirTemperature;
+                    });
 
                 context.HardwareManager.Setup(s => s.Write(It.IsAny<PinName>(), It.IsAny<bool>())).Callback<PinName, bool>((pin, state) =>
                 {
