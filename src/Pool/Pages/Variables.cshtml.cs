@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+
 using Microsoft.AspNetCore.Mvc.RazorPages;
+
 using Pool.Control;
 using Pool.Hardware;
 
@@ -25,6 +24,10 @@ namespace Pool.Pages
             this.Variables.Add(VariableItem.Create("Température du bassin", state.PoolTemperature));
             this.Variables.Add(VariableItem.Create("Durée de filtration/jour", state.PumpingDurationPerDayInHours));
             this.Variables.Add(VariableItem.Create("Pompe", state.Pump));
+            this.Variables.Add(VariableItem.Create("Arosage automatique", state.WateringScheduleEnabled));
+            this.Variables.Add(VariableItem.Create("Durée d'arosage automatique", state.WateringScheduleDuration));
+            this.Variables.Add(VariableItem.Create("Arosage manuel", state.WateringManualOn));
+            this.Variables.Add(VariableItem.Create("Durée d'arosage manuel", state.WateringManualDuration));
         }
 
         public HardwareOutputState[] Outputs { get; set; }
@@ -33,7 +36,6 @@ namespace Pool.Pages
 
         public void OnGet()
         {
-
         }
 
         public class VariableItem
@@ -43,6 +45,11 @@ namespace Pool.Pages
             public string Date { get; set; }
 
             public static VariableItem Create(string name, SampleValue<double> value)
+            {
+                return new VariableItem() { Name = name, Value = value.Value.ToString(), Date = value.Time.ToString() };
+            }
+
+            public static VariableItem Create(string name, SampleValue<int> value)
             {
                 return new VariableItem() { Name = name, Value = value.Value.ToString(), Date = value.Time.ToString() };
             }

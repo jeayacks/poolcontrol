@@ -4,8 +4,6 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using Pool.Control;
-
 namespace Pool.Controllers
 {
     /// <summary>
@@ -17,5 +15,10 @@ namespace Pool.Controllers
         /// True if the switch is active
         /// </summary>
         public bool Active { get; set; }
+
+        /// <summary>
+        /// The optional int value
+        /// </summary>
+        public int Value { get; set; }
     }
 }

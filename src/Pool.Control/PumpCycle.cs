@@ -11,20 +11,14 @@ namespace Pool.Control.Store
     /// <summary>
     /// Defines a pump cycle
     /// </summary>
-    public class PumpCycle
+    public class PumpCycle : Cycle
     {
-        public PumpCycle(DateTime startTime, DateTime endTime, bool chlorineInhibition, bool phRegulationInhibition) =>
-            (StartTime, EndTime, ChlorineInhibition, PhRegulationInhibition) = (startTime, endTime, chlorineInhibition, phRegulationInhibition);
-
-        /// <summary>
-        /// Gets the time of start or end cycle
-        /// </summary>
-        public DateTime StartTime { get;  }
-
-        /// <summary>
-        /// Gets the time of end or end cycle
-        /// </summary>
-        public DateTime EndTime { get;  }
+        public PumpCycle(DateTime startTime, DateTime endTime, bool chlorineInhibition, bool phRegulationInhibition)
+            : base(startTime, endTime)
+        {
+            this.ChlorineInhibition = chlorineInhibition;
+            this.PhRegulationInhibition = phRegulationInhibition;
+        }
 
         /// <summary>
         /// True to stop chlorine
@@ -34,6 +28,6 @@ namespace Pool.Control.Store
         /// <summary>
         /// True to stop PH
         /// </summary>
-        public bool PhRegulationInhibition { get;  }
+        public bool PhRegulationInhibition { get; }
     }
 }

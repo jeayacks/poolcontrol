@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------
 
 using System.Linq;
+
 using Pool.Control;
 using Pool.Hardware;
 
@@ -24,6 +25,11 @@ namespace Pool.Controllers
         /// Get text status
         /// </summary>
         public string Status { get; set; }
+
+        /// <summary>
+        /// Get text status
+        /// </summary>
+        public string WateringStatus { get; set; }
 
         /// <summary>
         /// Water temperature without any filtering, even when pump is stopped
@@ -91,6 +97,26 @@ namespace Pool.Controllers
         public bool Watering { get; set; }
 
         /// <summary>
+        /// The automatic duration in minutes.
+        /// </summary>
+        public int WateringScheduleDuration { get; set; }
+
+        /// <summary>
+        /// The manual duration in minutes.
+        /// </summary>
+        public int WateringManualDuration { get; set; }
+
+        /// <summary>
+        /// To switch schedule watering
+        /// </summary>
+        public bool WateringScheduleEnabled { get; set; }
+
+        /// <summary>
+        /// To switch on manual watering
+        /// </summary>
+        public bool WateringManualOn { get; set; }
+
+        /// <summary>
         /// Swimming pool ligth on.
         /// </summary>
         public bool SwimmingPoolLigth { get; set; }
@@ -123,6 +149,10 @@ namespace Pool.Controllers
                 SwimmingPoolLigth = outputs.Single(o => o.Output == PinName.SwimmingPoolLigth).State,
                 DeckLight = outputs.Single(o => o.Output == PinName.DeckLight).State,
                 Watering = outputs.Single(o => o.Output == PinName.Watering).State,
+                WateringManualDuration = systemState.WateringManualDuration.Value,
+                WateringManualOn = systemState.WateringManualOn.Value,
+                WateringScheduleDuration = systemState.WateringScheduleDuration.Value,
+                WateringScheduleEnabled = systemState.WateringScheduleEnabled.Value,
             };
 
             if (result.PumpForceOn | result.PumpForceOff)
@@ -142,6 +172,19 @@ namespace Pool.Controllers
                     {
                         result.Status = string.Format("Prochain cycle de {0:HH:mm} a {1:HH:mm}", pumpCycle.StartTime, pumpCycle.EndTime);
                     }
+                }
+            }
+
+            if (state.WateringCycles.Any())
+            {
+                var cycle = state.WateringCycles.First();
+                if (result.Watering)
+                {
+                    result.WateringStatus = string.Format("En cours jusqu'a {0:HH:mm}", cycle.EndTime);
+                }
+                else
+                {
+                    result.WateringStatus = string.Format("Prochain cycle de {0:HH:mm} a {1:HH:mm}", cycle.StartTime, cycle.EndTime);
                 }
             }
 

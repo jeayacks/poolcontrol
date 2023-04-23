@@ -6,12 +6,14 @@
 
 namespace Pool.Controllers
 {
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
-    using Pool.Control;
-    using Pool.Hardware;
     using System;
     using System.Linq;
+
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+
+    using Pool.Control;
+    using Pool.Hardware;
 
     [ApiController]
     [Route("api/v1")]
@@ -71,6 +73,7 @@ namespace Pool.Controllers
             {
                 case "PumpForceOff":
                     return new SwitchState() { Active = systemState.PumpForceOff.Value };
+
                 case "PumpForceOn":
                     return new SwitchState() { Active = systemState.PumpForceOn.Value };
             }
@@ -79,7 +82,7 @@ namespace Pool.Controllers
         }
 
         [HttpPost("io/{name}")]
-        public ActionResult ChangeSwitchState([FromRoute] string name, [FromBody]SwitchState state)
+        public ActionResult ChangeSwitchState([FromRoute] string name, [FromBody] SwitchState state)
         {
             this.logger.LogDebug($"POST api/v1/io/{name} state={state.Active}");
 
@@ -94,7 +97,6 @@ namespace Pool.Controllers
                 {
                     case PinName.DeckLight:
                     case PinName.SwimmingPoolLigth:
-                    case PinName.Watering:
                         this.hardwareManager.Write(output.Output, state.Active);
                         return this.Ok();
                 }
@@ -117,6 +119,22 @@ namespace Pool.Controllers
                         systemState.PumpForceOff.UpdateValue(false);
                     }
                     return this.Ok();
+
+                case "WateringManualOn":
+                    systemState.WateringManualOn.UpdateValue(state.Active);
+                    return this.Ok();
+
+                case "WateringScheduleEnabled":
+                    systemState.WateringScheduleEnabled.UpdateValue(state.Active);
+                    return this.Ok();
+
+                case "WateringScheduleDuration":
+                    systemState.WateringScheduleDuration.UpdateValue(state.Value);
+                    return this.Ok();
+
+                case "WateringManualDuration":
+                    systemState.WateringManualDuration.UpdateValue(state.Value);
+                    return this.Ok();
             }
 
             return this.BadRequest("Switch not found");
@@ -136,6 +154,7 @@ namespace Pool.Controllers
                 case "CloseCover":
                     this.poolControl.CloseCover();
                     break;
+
                 case "StopCover":
                     this.poolControl.StopCover();
                     break;

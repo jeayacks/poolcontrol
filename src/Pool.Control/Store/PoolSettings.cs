@@ -8,9 +8,7 @@ namespace Pool.Control.Store
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Host all pool settings
@@ -33,7 +31,7 @@ namespace Pool.Control.Store
         public PoolWorkingMode WorkingMode { get; set; }
 
         /// <summary>
-        /// Gets or sets the duration of cover operation 
+        /// Gets or sets the duration of cover operation
         /// </summary>
         public int CoverCylcleDurationInSeconds { get; set; }
 
@@ -57,6 +55,10 @@ namespace Pool.Control.Store
         /// </summary>
         public List<TemperatureRunTime> TemperatureRunTime { get; set; }
 
+        /// <summary>
+        /// Gets or sets the sheduled watering
+        /// </summary>
+        public TimeSpan WateringScheduleTime { get; set; }
 
         /// <summary>
         /// Gets the number of pumping hours per day using temperature

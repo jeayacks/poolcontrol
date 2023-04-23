@@ -6,13 +6,8 @@
 
 namespace Pool.Control
 {
-    using Microsoft.Extensions.Logging;
     using Pool.Control.Store;
     using Pool.Hardware;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
 
     /// <summary>
     /// Manages the pump.
@@ -21,9 +16,8 @@ namespace Pool.Control
     {
         public SystemState SystemState { get; set; }
         public PoolSettings PoolSettings { get; set; }
-
         public HardwareOutputState[] Outputs { get; set; }
-
         public PumpCycle[] PumpCycles { get; set; }
+        public Cycle[] WateringCycles { get; set; }
     }
 }

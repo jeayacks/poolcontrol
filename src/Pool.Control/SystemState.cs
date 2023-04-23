@@ -27,6 +27,10 @@ namespace Pool.Control
             this.Pump = new SampleValue<bool>(time, false);
             this.PumpForceOff = new SampleValue<bool>(time, false);
             this.PumpForceOn = new SampleValue<bool>(time, false);
+            this.WateringScheduleEnabled = new SampleValue<bool>(time, false);
+            this.WateringManualOn = new SampleValue<bool>(time, false);
+            this.WateringScheduleDuration = new SampleValue<int>(time, 15);
+            this.WateringManualDuration = new SampleValue<int>(time, 10);
         }
 
         /// <summary>
@@ -78,5 +82,25 @@ namespace Pool.Control
         /// The pump state
         /// </summary>
         public SampleValue<bool> PumpForceOn { get; set; }
+
+        /// <summary>
+        /// Watering manual on
+        /// </summary>
+        public SampleValue<bool> WateringManualOn { get; set; }
+
+        /// <summary>
+        /// Watering schedule enabled.
+        /// </summary>
+        public SampleValue<bool> WateringScheduleEnabled { get; set; }
+
+        /// <summary>
+        /// Watering schedule duration in minutes.
+        /// </summary>
+        public SampleValue<int> WateringScheduleDuration { get; set; }
+
+        /// <summary>
+        /// Watering schedule duration in minutes.
+        /// </summary>
+        public SampleValue<int> WateringManualDuration { get; set; }
     }
 }

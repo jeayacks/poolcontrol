@@ -9,7 +9,9 @@ namespace Pool.Control
     using System;
     using System.Linq;
     using System.Threading;
+
     using Microsoft.Extensions.Logging;
+
     using Pool.Control.Store;
     using Pool.Hardware;
 
@@ -42,10 +44,11 @@ namespace Pool.Control
         /// The setting store.
         /// </summary>
         private IStoreService storeService;
+
         /// <summary>
         /// Loop delay
         /// </summary>
-        private int loopDelay = 1000;
+        private int loopDelay = 100;
 
         /// <summary>
         /// The general settings
@@ -68,6 +71,11 @@ namespace Pool.Control
         private PoolControlCover coverControl;
 
         /// <summary>
+        /// The wateringcontrol.
+        /// </summary>
+        private WateringControl wateringControlLoop;
+
+        /// <summary>
         /// Time of last save.
         /// </summary>
         private DateTime lastSystemStateSave = DateTime.Now;
@@ -79,7 +87,7 @@ namespace Pool.Control
             ILogger<PoolControl> logger,
             IHardwareManager hardwareManager,
             IStoreService storeService,
-            int loopDelay = 1000)
+            int loopDelay = 100)
         {
             this.logger = logger;
             this.hardwareManager = hardwareManager;
@@ -99,6 +107,7 @@ namespace Pool.Control
                 Outputs = this.hardwareManager.GetOutputs().ToArray(),
                 PumpCycles = this.poolControlLoop.GetCyclesInfo().ToArray(),
                 PoolSettings = this.poolSettings,
+                WateringCycles = this.wateringControlLoop.GetCyclesInfo().ToArray(),
             };
         }
 
@@ -128,9 +137,11 @@ namespace Pool.Control
             this.poolSettings.FrostProtection = settings.FrostProtection;
             this.poolSettings.WorkingMode = settings.WorkingMode;
             this.poolSettings.TemperatureRunTime = settings.TemperatureRunTime;
+            this.poolSettings.WateringScheduleTime = settings.WateringScheduleTime;
             this.storeService.WritePoolSettings(this.poolSettings, settingsFileName);
 
             this.poolControlLoop.ResetSettings(this.poolSettings);
+            this.wateringControlLoop.ResetSettings(this.poolSettings);
         }
 
         /// <summary>
@@ -167,6 +178,7 @@ namespace Pool.Control
 
             this.poolControlLoop = new PoolControlPump(this.poolSettings, this.systemState, this.hardwareManager);
             this.coverControl = new PoolControlCover(this.poolSettings, this.systemState, this.hardwareManager);
+            this.wateringControlLoop = new WateringControl(this.poolSettings, this.systemState, this.hardwareManager);
 
             this.hardwareManager.OpenConfiguration();
             this.hardwareManager.BooleanInputChanged += HardwareManager_BooleanInputChanged;
@@ -189,6 +201,11 @@ namespace Pool.Control
                     this.coverControl.Idle();
                 }
 
+                lock (this.wateringControlLoop)
+                {
+                    this.wateringControlLoop.Process();
+                }
+
                 // Persist current values every hour
                 if (this.lastSystemStateSave.AddHours(1) < DateTime.Now)
                 {
@@ -205,7 +222,6 @@ namespace Pool.Control
 
             this.logger.LogInformation("Control loop ended.");
         }
-
 
         private void HardwareManager_BooleanInputChanged(object sender, BooleanInputChangeEventArgs e)
         {

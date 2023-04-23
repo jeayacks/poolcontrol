@@ -117,6 +117,12 @@
                             <i class="@(Model.GeneralState.DeckLight ? "fas fa-lightbulb text-success":"far fa-lightbulb text-muted")"></i>
                         </td>
                     </tr>
+                    <tr>
+                        <td colspan="2">
+                            @this.Model.GeneralState.WateringStatus
+                        </td>
+                    </tr>
+
                 </tbody>
             </table>
         </div>
