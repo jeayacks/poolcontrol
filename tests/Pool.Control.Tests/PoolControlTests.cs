@@ -1,12 +1,15 @@
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Pool.Control.Store;
-using Pool.Hardware;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using Moq;
+
+using Pool.Control.Store;
+using Pool.Hardware;
 
 namespace Pool.Control.Tests
 {
@@ -87,6 +90,7 @@ namespace Pool.Control.Tests
                 };
 
                 context.HardwareManager.Setup(s => s.GetOutputs()).Returns(new List<HardwareOutputState>());
+                context.HardwareManager.Setup(s => s.GetOutput(It.IsAny<PinName>())).Returns<PinName>(pin => new HardwareOutputState(pin, pin.ToString()));
                 context.HardwareManager.Setup(s => s.ReadTemperatureValue(It.IsAny<TemperatureSensorName>())).Returns(27.2);
 
                 var poolSettings = GetPoolSettings();

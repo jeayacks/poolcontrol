@@ -89,8 +89,8 @@ namespace Pool.Control.Tests
         {
             using (var systemTime = new SystemTimeMock())
             {
-                var time = DateTime.Now.Date;
-                systemTime.Set(new DateTime(2020, 06, 01, 6, 0, 0));
+                var time = new DateTime(2020, 06, 01, 6, 0, 0);
+                systemTime.Set(time);
 
                 var wateringControl = new WateringControl(
                     this.poolSettings,
@@ -115,6 +115,13 @@ namespace Pool.Control.Tests
                 Assert.IsTrue(wateringState);
 
                 systemTime.Set(time.AddHours(1).AddMinutes(21));
+                wateringControl.Process();
+                Assert.IsFalse(wateringState);
+
+                systemTime.Set(time.AddDays(1).AddHours(1));
+                wateringControl.Process();
+                Assert.IsTrue(wateringState);
+                systemTime.Set(time.AddDays(1).AddHours(1).AddMinutes(21));
                 wateringControl.Process();
                 Assert.IsFalse(wateringState);
             }

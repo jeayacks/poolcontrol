@@ -33,6 +33,7 @@ namespace Pool.Control
         private DateTime nextSchedule;
         private DateTime? lastSwitchOnTime;
         private DateTime? nextSwitchOffTime;
+        private bool wateringRaisedByManual = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PoolControlCover"/> class.
@@ -73,6 +74,7 @@ namespace Pool.Control
                     this.lastSwitchOnTime = SystemTime.Now;
                     this.nextSwitchOffTime = SystemTime.Now.Add(this.GetValidDuration(this.systemState.WateringScheduleDuration.Value));
                     this.nextSchedule = SystemTime.Now.Date.AddDays(1).Add(this.schedule);
+                    this.wateringRaisedByManual = false;
                 }
             }
 
@@ -81,9 +83,11 @@ namespace Pool.Control
                 watering = true;
                 this.lastSwitchOnTime = SystemTime.Now;
                 this.nextSwitchOffTime = SystemTime.Now.Add(this.GetValidDuration(this.systemState.WateringManualDuration.Value));
+                this.wateringRaisedByManual = true;
             }
 
-            if (!this.systemState.WateringManualOn.Value && watering)
+            // Manual set to off -> Stop watering
+            if (!this.systemState.WateringManualOn.Value && this.wateringRaisedByManual)
             {
                 watering = false;
             }
@@ -100,6 +104,7 @@ namespace Pool.Control
                 if (!watering)
                 {
                     this.nextSwitchOffTime = null;
+                    this.wateringRaisedByManual = false;
                     this.systemState.WateringManualOn.UpdateValue(false);
                 }
             }
