@@ -14,7 +14,7 @@ See my [home assistant configuration example](doc/home-assistant-integration.md)
 
 ## The context
 
-Because for me swimming is a pleasure, I don't want to spend a lot of time for setting up the water filtration and the treatments, minimum is the best :-).
+I don't want to spend a lot of time for setting up the water filtration and the treatments, minimum is the best :-).
 The principle is to automatically adjust the pumping duration according the water temperature with few modifications of the existing system.
 I decided to deploy a specific system instead of using my existing home automation installation, mainly for independence reasons, this system can completely operate without being connected.
 
